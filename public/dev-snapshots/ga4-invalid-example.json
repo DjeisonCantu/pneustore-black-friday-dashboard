@@ -1,0 +1,23 @@
+{
+  "_aviso": "DADOS FICTÍCIOS E PROPOSITALMENTE INVÁLIDO — usado para testar que o carregador rejeita snapshots fora do contrato (platform deveria ser 'site', nunca 'app'). Nunca deve ser aceito pela aplicação.",
+  "metadata": {
+    "source": "ga4",
+    "platform": "app",
+    "schemaVersion": "1.0.0",
+    "extractedAt": "2026-11-27T23:05:00-03:00",
+    "period": { "from": "2026-11-27", "to": "2026-11-27" },
+    "deviceScope": ["desktop"],
+    "status": "ok"
+  },
+  "records": [
+    {
+      "date": "2026-11-27",
+      "isFuture": false,
+      "isPartial": false,
+      "sessions": { "desktop": 100, "mobile": 0, "tablet": 0 },
+      "users": { "desktop": 80, "mobile": 0, "tablet": 0 },
+      "orders": { "desktop": 2, "mobile": 0, "tablet": 0 },
+      "revenue": { "desktop": 2000, "mobile": 0, "tablet": 0 }
+    }
+  ]
+}

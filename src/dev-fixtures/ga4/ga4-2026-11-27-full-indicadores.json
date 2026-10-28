@@ -1,0 +1,73 @@
+{
+  "_aviso": "DADOS FICTÍCIOS — exemplo local para desenvolvimento (Missão 04, Etapa C4). Não representa números reais de GA4. Demonstra as seções opcionais 'acquisition' (IND-07) e 'catalog' (IND-08), adicionadas ao contrato nesta etapa — ver 04-validacao/17-plano-ativacao-indicadores.md.",
+  "metadata": {
+    "source": "ga4",
+    "platform": "site",
+    "schemaVersion": "1.1.0",
+    "extractedAt": "2026-11-27T23:05:00-03:00",
+    "period": { "from": "2026-11-27", "to": "2026-11-27" },
+    "deviceScope": ["desktop", "mobile", "tablet"],
+    "status": "ok",
+    "note": "Inclui acquisition e catalog só para demonstrar o contrato estendido — nenhum provedor real os preenche ainda."
+  },
+  "records": [
+    {
+      "date": "2026-11-27",
+      "isFuture": false,
+      "isPartial": true,
+      "sessions": { "desktop": 9100, "mobile": 14200, "tablet": 980 },
+      "users": { "desktop": 7200, "mobile": 11100, "tablet": 790 },
+      "orders": { "desktop": 210, "mobile": 165, "tablet": 14 },
+      "revenue": { "desktop": 235400.0, "mobile": 161900.5, "tablet": 13820.75 }
+    }
+  ],
+  "acquisition": {
+    "channels": [
+      { "channel": "CPC", "sourceMedium": "google / cpc", "sessions": 9490, "orders": 148, "revenue": 168200.0 },
+      { "channel": "Organic", "sourceMedium": "google / organic", "sessions": 7300, "orders": 112, "revenue": 121500.0 },
+      { "channel": "Direct", "sourceMedium": "(direct) / (none)", "sessions": 4130, "orders": 76, "revenue": 84300.5 },
+      { "channel": "Outros", "sessions": 1950, "orders": 31, "revenue": 29640.25 },
+      { "channel": "CRM", "sourceMedium": "crm / email", "sessions": 980, "orders": 14, "revenue": 5680.0 },
+      { "channel": "Criteo", "sourceMedium": "criteo / display", "sessions": 430, "orders": 8, "revenue": 1800.0 }
+    ]
+  },
+  "catalog": {
+    "products": [
+      {
+        "name": "Pneu Aro 15 Pirelli Cinturato",
+        "brand": "Pirelli",
+        "category": "Pneu",
+        "isService": false,
+        "itemsViewed": 3200,
+        "itemsAdded": 860,
+        "itemsPurchased": 210,
+        "itemRevenue": 84000.0
+      },
+      {
+        "name": "Pneu Aro 17 Goodyear EfficientGrip",
+        "brand": "Goodyear",
+        "category": "Pneu",
+        "isService": false,
+        "itemsViewed": 2100,
+        "itemsAdded": 540,
+        "itemsPurchased": 140,
+        "itemRevenue": 72800.0
+      },
+      {
+        "name": "Instalação e balanceamento",
+        "brand": "PneuStore",
+        "isService": true,
+        "itemsViewed": 1800,
+        "itemsAdded": 650,
+        "itemsPurchased": 300,
+        "itemRevenue": 10500.0
+      }
+    ],
+    "brands": [
+      { "brand": "Pirelli", "itemsViewed": 3200, "itemsAdded": 860, "itemsPurchased": 210, "itemRevenue": 84000.0 },
+      { "brand": "Goodyear", "itemsViewed": 2100, "itemsAdded": 540, "itemsPurchased": 140, "itemRevenue": 72800.0 },
+      { "brand": "PneuStore", "itemsViewed": 1800, "itemsAdded": 650, "itemsPurchased": 300, "itemRevenue": 10500.0 }
+    ],
+    "categories": null
+  }
+}

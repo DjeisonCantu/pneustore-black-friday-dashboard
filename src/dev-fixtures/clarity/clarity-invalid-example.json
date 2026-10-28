@@ -1,0 +1,22 @@
+{
+  "_aviso": "DADOS FICTÍCIOS E PROPOSITALMENTE INVÁLIDO — usado para testar que o carregador rejeita snapshots do Clarity fora do contrato (platform deveria ser 'site', nunca 'app'). Nunca deve ser aceito pela aplicação.",
+  "metadata": {
+    "source": "clarity",
+    "project": "PneuStore (app)",
+    "platform": "app",
+    "schemaVersion": "1.0.0",
+    "extractedAt": "2026-11-27T23:10:00-03:00",
+    "period": { "from": "2026-11-27", "to": "2026-11-27" },
+    "deviceScope": ["mobile"],
+    "status": "ok"
+  },
+  "pages": [
+    {
+      "page": "/app/checkout",
+      "device": "mobile",
+      "deadClicks": { "absolute": 10 },
+      "rageClicks": { "absolute": 1 },
+      "quickBacks": { "absolute": 2 }
+    }
+  ]
+}

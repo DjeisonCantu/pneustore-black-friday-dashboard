@@ -1,0 +1,24 @@
+{
+  "_aviso": "DADOS FICTÍCIOS — exemplo local para desenvolvimento (Missão 04, Etapa C0). Não representa números reais de GA4.",
+  "metadata": {
+    "source": "ga4",
+    "platform": "site",
+    "schemaVersion": "1.0.0",
+    "extractedAt": "2026-11-27T14:10:00-03:00",
+    "period": { "from": "2026-11-27", "to": "2026-11-27" },
+    "deviceScope": ["desktop", "mobile", "tablet"],
+    "status": "partial",
+    "note": "Coleta interrompida por instabilidade simulada da fonte às 14h — dado do dia ainda incompleto."
+  },
+  "records": [
+    {
+      "date": "2026-11-27",
+      "isFuture": false,
+      "isPartial": true,
+      "sessions": { "desktop": 3900, "mobile": 6100, "tablet": 410 },
+      "users": { "desktop": 3100, "mobile": 4800, "tablet": 330 },
+      "orders": { "desktop": 72, "mobile": 58, "tablet": 5 },
+      "revenue": { "desktop": 80640.0, "mobile": 56840.2, "tablet": 4950.0 }
+    }
+  ]
+}

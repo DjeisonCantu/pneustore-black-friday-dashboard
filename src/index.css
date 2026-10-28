@@ -1,0 +1,272 @@
+@import "tailwindcss";
+
+/*
+  Tokens de marca — fonte: logos fornecidos em "DS PNEUSTORE" (28/10/2026) e
+  02-design/design-system-pneustore.md.
+
+  - --color-primary-base = #4e008e foi amostrado diretamente do PNG da logo
+    (PneustorePURPLE.png / CantuPURPLE.png), não estimado.
+  - A escala (hover/active/soft/border) e os tons de Success/Warning/Info/
+    Error/Control foram DERIVADOS a partir desse roxo e de convenções comuns
+    de design system, pois o .md de referência não traz valores HEX exatos
+    (ver seção 5, "Pendências"). Tratar como provisório até a equipe de
+    Design validar o arquivo original.
+  - Tipografia: família e escala de tamanhos (Base/SM/LG/H1–H5) seguem
+    exatamente o que está documentado no .md. A fonte "SF Pro Text" não é
+    distribuída como arquivo (ver nota de licenciamento) — usamos a pilha de
+    fontes de sistema da Apple, que resolve para San Francisco nos aparelhos
+    Apple sem baixar nenhum arquivo de fonte.
+*/
+
+@theme {
+  --font-sans:
+    -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", "Helvetica Neue", Helvetica, Arial,
+    sans-serif;
+
+  /* Escala tipográfica (Base/SM/LG/H1–H5) — nomes próprios para não colidir
+     com a escala padrão do Tailwind (text-sm, text-base…). */
+  --text-ds-sm: 12px;
+  --text-ds-sm--line-height: 20px;
+  --text-ds-base: 14px;
+  --text-ds-base--line-height: 22px;
+  --text-ds-lg: 16px;
+  --text-ds-lg--line-height: 24px;
+  --text-ds-h5: 16px;
+  --text-ds-h5--line-height: 24px;
+  --text-ds-h4: 20px;
+  --text-ds-h4--line-height: 28px;
+  --text-ds-h3: 24px;
+  --text-ds-h3--line-height: 32px;
+  --text-ds-h2: 30px;
+  --text-ds-h2--line-height: 38px;
+  --text-ds-h1: 36px;
+  --text-ds-h1--line-height: 46px;
+
+  /* Superfícies (tema claro por padrão) */
+  --color-background: #f4f4f7;
+  --color-surface: #ffffff;
+  --color-surface-muted: #f3f1f7;
+  --color-surface-raised: #ffffff;
+  --color-border: #e4e1ec;
+  --color-foreground: #19161f;
+  --color-muted-foreground: #6b6675;
+
+  /* Primary — amostrado da logo (#4e008e) + escala derivada */
+  --color-primary: #4e008e;
+  --color-primary-hover: #410075;
+  --color-primary-active: #350061;
+  --color-primary-soft: #f5effa;
+  --color-primary-border: #ddc9ed;
+  --color-primary-foreground: #ffffff;
+
+  /* Link — ligado à paleta primária, conforme o grupo "Link" do DS */
+  --color-link: var(--color-primary);
+  --color-link-hover: var(--color-primary-hover);
+  --color-link-active: var(--color-primary-active);
+
+  /* Success / Warning / Info / Error — tema claro */
+  --color-success: #178a41;
+  --color-success-soft: #ebf9f0;
+  --color-success-border: #bfe8cf;
+  --color-warning: #a3690a;
+  --color-warning-soft: #fff7e5;
+  --color-warning-border: #f4dba3;
+  --color-info: #4338ca;
+  --color-info-soft: #edecfd;
+  --color-info-border: #c7c2f7;
+  --color-error: #c81e0f;
+  --color-error-soft: #fdedec;
+  --color-error-border: #f3c6c2;
+
+  /* Fictício (RA-06) — cor própria, fora da paleta de marca para nunca ser
+     confundida com Primary nem com os estados Success/Warning/Error. */
+  --color-fictitious: #0f7c8f;
+  --color-fictitious-soft: #e9f9fb;
+  --color-fictitious-border: #b7e7ee;
+
+  /* Control — superfícies/bordas de controles interativos (inputs, selects) */
+  --color-control-bg: #ffffff;
+  --color-control-bg-disabled: #f3f1f7;
+  --color-control-hover: #f3f1f7;
+  --color-control-border: #ddd8e6;
+
+  --radius-card: 1rem;
+  --radius-control: 0.625rem;
+  --radius-pill: 999px;
+
+  --shadow-apple-sm: 0 1px 2px rgba(25, 22, 31, 0.04), 0 1px 1px rgba(25, 22, 31, 0.03);
+  --shadow-apple-md: 0 8px 24px rgba(25, 22, 31, 0.08), 0 2px 6px rgba(25, 22, 31, 0.04);
+  --shadow-apple-lg: 0 16px 48px rgba(25, 22, 31, 0.14), 0 4px 12px rgba(25, 22, 31, 0.06);
+}
+
+/* Tema escuro — por preferência do sistema, salvo override manual (data-theme) */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --color-background: #141217;
+    --color-surface: #1e1c23;
+    --color-surface-muted: #262330;
+    --color-surface-raised: #2a2733;
+    --color-border: rgba(255, 255, 255, 0.1);
+    --color-foreground: #f5f3f8;
+    --color-muted-foreground: #a7a1b3;
+
+    --color-primary: #b468f3;
+    --color-primary-hover: #c583f6;
+    --color-primary-active: #a24aec;
+    --color-primary-soft: #3b1f51;
+    --color-primary-border: #5a3a78;
+    --color-primary-foreground: #150a1f;
+
+    --color-success: #4dcb7b;
+    --color-success-soft: #163826;
+    --color-success-border: #235c3c;
+    --color-warning: #fab338;
+    --color-warning-soft: #3a2a10;
+    --color-warning-border: #5c4318;
+    --color-info: #817bf4;
+    --color-info-soft: #241f55;
+    --color-info-border: #3b3480;
+    --color-error: #f66055;
+    --color-error-soft: #3a1714;
+    --color-error-border: #5c2621;
+
+    --color-fictitious: #5ad0e2;
+    --color-fictitious-soft: #10313a;
+    --color-fictitious-border: #1c4e5b;
+
+    --color-control-bg: #242230;
+    --color-control-bg-disabled: #1e1c23;
+    --color-control-hover: #2d2a38;
+    --color-control-border: rgba(255, 255, 255, 0.14);
+
+    --shadow-apple-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --shadow-apple-md: 0 8px 24px rgba(0, 0, 0, 0.45);
+    --shadow-apple-lg: 0 16px 48px rgba(0, 0, 0, 0.55);
+  }
+}
+
+/* Override manual via seletor de tema (ThemeToggle) */
+:root[data-theme="dark"] {
+  --color-background: #141217;
+  --color-surface: #1e1c23;
+  --color-surface-muted: #262330;
+  --color-surface-raised: #2a2733;
+  --color-border: rgba(255, 255, 255, 0.1);
+  --color-foreground: #f5f3f8;
+  --color-muted-foreground: #a7a1b3;
+
+  --color-primary: #b468f3;
+  --color-primary-hover: #c583f6;
+  --color-primary-active: #a24aec;
+  --color-primary-soft: #3b1f51;
+  --color-primary-border: #5a3a78;
+  --color-primary-foreground: #150a1f;
+
+  --color-success: #4dcb7b;
+  --color-success-soft: #163826;
+  --color-success-border: #235c3c;
+  --color-warning: #fab338;
+  --color-warning-soft: #3a2a10;
+  --color-warning-border: #5c4318;
+  --color-info: #817bf4;
+  --color-info-soft: #241f55;
+  --color-info-border: #3b3480;
+  --color-error: #f66055;
+  --color-error-soft: #3a1714;
+  --color-error-border: #5c2621;
+
+  --color-fictitious: #5ad0e2;
+  --color-fictitious-soft: #10313a;
+  --color-fictitious-border: #1c4e5b;
+
+  --color-control-bg: #242230;
+  --color-control-bg-disabled: #1e1c23;
+  --color-control-hover: #2d2a38;
+  --color-control-border: rgba(255, 255, 255, 0.14);
+
+  --shadow-apple-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-apple-md: 0 8px 24px rgba(0, 0, 0, 0.45);
+  --shadow-apple-lg: 0 16px 48px rgba(0, 0, 0, 0.55);
+}
+
+:root {
+  color-scheme: light dark;
+}
+:root[data-theme="light"] {
+  color-scheme: light;
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  font-feature-settings: "tnum" 1, "lnum" 1;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+* {
+  border-color: var(--color-border);
+}
+
+::selection {
+  background-color: var(--color-primary-soft);
+}
+
+/* "Material" translúcido ao estilo macOS/iOS para cabeçalho e barra lateral */
+.material-chrome {
+  background-color: color-mix(in srgb, var(--color-surface) 72%, transparent);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+}
+
+/* Scrollbars para tabelas com rolagem horizontal (mobile) */
+.scroll-thin::-webkit-scrollbar {
+  height: 6px;
+  width: 6px;
+}
+.scroll-thin::-webkit-scrollbar-thumb {
+  background-color: var(--color-border);
+  border-radius: 999px;
+}
+
+@media print {
+  html,
+  body {
+    background: #ffffff !important;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .print-only {
+    display: block !important;
+  }
+
+  .print-break-inside-avoid {
+    break-inside: avoid;
+  }
+
+  main {
+    padding: 0 !important;
+  }
+
+  .material-chrome {
+    background: #ffffff !important;
+    backdrop-filter: none !important;
+  }
+}
+
+.print-only {
+  display: none;
+}

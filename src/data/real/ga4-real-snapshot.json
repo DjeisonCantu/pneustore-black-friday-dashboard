@@ -1,0 +1,170 @@
+{
+  "metadata": {
+    "source": "ga4",
+    "platform": "site",
+    "schemaVersion": "1.3.0",
+    "extractedAt": "2026-10-28T19:42:59.764Z",
+    "period": {
+      "from": "2026-09-30",
+      "to": "2026-10-27",
+      "raw": "30 de set. de 2026 - 27 de out. de 2026"
+    },
+    "deviceScope": [
+      "desktop",
+      "mobile",
+      "tablet"
+    ],
+    "status": "partial",
+    "note": "Extraído manualmente de um PDF exportado do Looker Studio (looker-pdf-cli.mjs), não da GA4 Data API diretamente.",
+    "limitations": [
+      "records[] representa o TOTAL do período inteiro exibido, sem segmentação por dia nem por dispositivo.",
+      "users e revenue vieram arredondados pelo Looker (formato mil/mi) — valores aproximados, não oficiais.",
+      "acquisition.channels[] não tem sessões nem pedidos — este relatório só fornece receita por origem/mídia (parte também aproximada).",
+      "catalog.brands[].itemsAdded é estimado a partir de %Add to Cart do Looker, não uma contagem bruta.",
+      "Separação site/app não comprovada estruturalmente (sem streamId) — depende de revisão manual de qual página do PDF foi usada.",
+      "Taxa de conversão não incluída — fórmula oficial pendente de aprovação da Analytics (D-04)."
+    ]
+  },
+  "records": [
+    {
+      "date": "2026-10-27",
+      "isFuture": false,
+      "isPartial": true,
+      "sessions": {
+        "total": 1665578
+      },
+      "users": {
+        "total": 963600
+      },
+      "orders": {
+        "total": 32446
+      },
+      "revenue": {
+        "total": 48820000
+      }
+    }
+  ],
+  "acquisition": {
+    "channels": [
+      {
+        "channel": "Origem - CRM                                            google",
+        "sourceMedium": "Origem - CRM                                            google / cpc",
+        "revenue": 19410000
+      },
+      {
+        "channel": "meta",
+        "sourceMedium": "meta / cpc",
+        "revenue": 954450
+      },
+      {
+        "channel": "crmback",
+        "sourceMedium": "crmback / whatsapp",
+        "revenue": 814330
+      },
+      {
+        "channel": "crm",
+        "sourceMedium": "crm / email",
+        "revenue": 788370
+      },
+      {
+        "channel": "crm",
+        "sourceMedium": "crm / botao_push_saida",
+        "revenue": 270740
+      },
+      {
+        "channel": "google",
+        "sourceMedium": "google / organic",
+        "revenue": 12460000
+      },
+      {
+        "channel": "actionpay",
+        "sourceMedium": "actionpay / organic",
+        "revenue": 496630
+      },
+      {
+        "channel": "criteo",
+        "sourceMedium": "criteo / display",
+        "revenue": 201570
+      },
+      {
+        "channel": "ads.us.criteo.com",
+        "sourceMedium": "ads.us.criteo.com / referral",
+        "revenue": 7190
+      },
+      {
+        "channel": "(direct)",
+        "sourceMedium": "(direct) / (none)",
+        "revenue": 7470000
+      }
+    ]
+  },
+  "catalog": {
+    "products": [],
+    "brands": [
+      {
+        "brand": "Itaro",
+        "itemsViewed": 383921,
+        "itemsAdded": 162091,
+        "itemsPurchased": 24193,
+        "itemRevenue": 8816623.72
+      },
+      {
+        "brand": "Michelin",
+        "itemsViewed": 328843,
+        "itemsAdded": 61362,
+        "itemsPurchased": 7280,
+        "itemRevenue": 6693158.28
+      },
+      {
+        "brand": "Pirelli",
+        "itemsViewed": 219686,
+        "itemsAdded": 47232,
+        "itemsPurchased": 5862,
+        "itemRevenue": 4608484.79
+      },
+      {
+        "brand": "Speedmax",
+        "itemsViewed": 206487,
+        "itemsAdded": 41339,
+        "itemsPurchased": 6449,
+        "itemRevenue": 3808105.35
+      },
+      {
+        "brand": "Kumho",
+        "itemsViewed": 167092,
+        "itemsAdded": 48707,
+        "itemsPurchased": 8280,
+        "itemRevenue": 4084068.54
+      },
+      {
+        "brand": "Goodyear",
+        "itemsViewed": 103563,
+        "itemsAdded": 23664,
+        "itemsPurchased": 2339,
+        "itemRevenue": 1656621.39
+      },
+      {
+        "brand": "Bridgestone",
+        "itemsViewed": 102094,
+        "itemsAdded": 33783,
+        "itemsPurchased": 4156,
+        "itemRevenue": 3150389.77
+      },
+      {
+        "brand": "Firestone",
+        "itemsViewed": 73231,
+        "itemsAdded": 27762,
+        "itemsPurchased": 2978,
+        "itemRevenue": 1380531.62
+      },
+      {
+        "brand": "Barum",
+        "itemsViewed": 65071,
+        "itemsAdded": 24011,
+        "itemsPurchased": 2889,
+        "itemRevenue": 1114315.94
+      }
+    ],
+    "categories": null
+  }
+}

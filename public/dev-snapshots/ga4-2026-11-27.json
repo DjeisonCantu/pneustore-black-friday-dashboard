@@ -1,0 +1,32 @@
+{
+  "_aviso": "DADOS FICTÍCIOS — exemplo local para desenvolvimento (Missão 04, Etapa C0). Não representa números reais de GA4.",
+  "metadata": {
+    "source": "ga4",
+    "platform": "site",
+    "schemaVersion": "1.0.0",
+    "extractedAt": "2026-11-27T23:05:00-03:00",
+    "period": { "from": "2026-11-26", "to": "2026-11-27" },
+    "deviceScope": ["desktop", "mobile", "tablet"],
+    "status": "ok"
+  },
+  "records": [
+    {
+      "date": "2026-11-26",
+      "isFuture": false,
+      "isPartial": false,
+      "sessions": { "desktop": 4200, "mobile": 6800, "tablet": 450 },
+      "users": { "desktop": 3400, "mobile": 5300, "tablet": 360 },
+      "orders": { "desktop": 88, "mobile": 71, "tablet": 6 },
+      "revenue": { "desktop": 98560.4, "mobile": 69580.3, "tablet": 5890.1 }
+    },
+    {
+      "date": "2026-11-27",
+      "isFuture": false,
+      "isPartial": true,
+      "sessions": { "desktop": 9100, "mobile": 14200, "tablet": 980 },
+      "users": { "desktop": 7200, "mobile": 11100, "tablet": 790 },
+      "orders": { "desktop": 210, "mobile": 165, "tablet": 14 },
+      "revenue": { "desktop": 235400.0, "mobile": 161900.5, "tablet": 13820.75 }
+    }
+  ]
+}
