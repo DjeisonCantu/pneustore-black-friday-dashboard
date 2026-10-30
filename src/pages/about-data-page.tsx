@@ -6,8 +6,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { useRegisterPageExport } from '@/hooks/use-register-export'
 import { GLOSSARY, INDICATORS, KNOWN_LIMITATIONS } from '@/data/indicators'
 import { UNIT_LABELS } from '@/types/common'
-import { formatDateTime } from '@/lib/format'
-import { MOCK_TODAY } from '@/data/mock/daily-series'
 
 const STATUS_VARIANT: Record<string, 'success' | 'warning' | 'info' | 'error'> = {
   confirmado: 'success',
@@ -28,12 +26,10 @@ export function AboutDataPage() {
     const lines = [
       '# Sobre os dados — PneuStore · Site',
       '',
-      `_Gerado em ${formatDateTime(MOCK_TODAY)} a partir da maquete da Missão 02._`,
-      '',
       '## Fontes de dados reais (selo "REAL")',
       '',
-      '- **GA4 / Looker Studio** — período 02/10/2026 a 29/10/2026, extraído manualmente de um PDF exportado do Looker Studio (looker-pdf-cli.mjs), status parcial: usuários e parte da receita por canal aproximados, taxa de conversão não incluída (D-04).',
-      '- **Microsoft Clarity** — período 27/10/2026 a 29/10/2026 (3 dias fechados), sinais de atrito das 6 páginas de checkout agregados para todos os dispositivos (sem divisão por dispositivo nesta extração). Não comparável ao GA4 (RA-07); sem cálculo de abandono (D-05).',
+      '- **Resumo Executivo Pré-Black** (PneuStore_Resumo_Executivo_PreBlack_2026.pdf, PneuStore · UX Research) — relatório que gerou o pedido deste dashboard. Semana 14/10 a 20/10, comparada com o mesmo período de 2025. GA4: sessões, conversão, receita estimada e ticket médio (site inteiro). Clarity: passagem entre etapas e dead clicks por sessão, por dispositivo, e comparação 2025/2026. Usado na Visão geral e na Jornada de compra.',
+      '- **GA4 / Looker Studio** — período 02/10/2026 a 29/10/2026, extraído manualmente de um PDF exportado do Looker Studio (looker-pdf-cli.mjs), usado só para canal/marca em "Aquisição e produtos". Status parcial: usuários e parte da receita por canal aproximados, taxa de conversão não incluída (D-04).',
       '',
       '## Glossário',
       '',
@@ -87,27 +83,27 @@ export function AboutDataPage() {
         </CardHeader>
         <CardContent className="space-y-3 pt-0 text-ds-base text-[var(--color-muted-foreground)]">
           <p>
-            O restante do dashboard é uma maquete (dados fictícios, Missão 02). As duas fontes abaixo são exceção: aparecem com o selo{' '}
-            <Badge variant="success">REAL</Badge> no painel "GA4/Looker (real)" da Visão Geral e no painel "Sinais de atrito (Clarity)" da
-            Jornada de compra — nunca misturar os dois tipos de dado ao interpretar os números.
+            Todo número exibido no dashboard é real, vindo do GA4 ou do Microsoft Clarity — nunca uma terceira fonte. Onde isso é mais
+            relevante de destacar, aparece o selo <Badge variant="success">REAL</Badge>.
           </p>
           <div className="rounded-[var(--radius-control)] border border-[var(--color-border)] p-3.5">
-            <h3 className="text-ds-base font-semibold text-[var(--color-foreground)]">GA4 / Looker Studio</h3>
+            <h3 className="text-ds-base font-semibold text-[var(--color-foreground)]">Resumo Executivo Pré-Black (Visão geral e Jornada de compra)</h3>
             <p className="mt-1 text-ds-sm">
-              Período: 02/10/2026 a 29/10/2026 (rolante — ver limitações no painel). Extraído manualmente: exportação em PDF do Looker
-              Studio, processada por <code className="rounded bg-[var(--color-surface-muted)] px-1 py-0.5">04-validacao/scripts/looker-pdf-cli.mjs</code>.
-              Status: parcial (<code className="rounded bg-[var(--color-surface-muted)] px-1 py-0.5">status: &quot;partial&quot;</code>) —
-              não da GA4 Data API diretamente, usuários e parte da receita por canal aproximados, taxa de conversão não incluída (D-04).
+              Arquivo <code className="rounded bg-[var(--color-surface-muted)] px-1 py-0.5">PneuStore_Resumo_Executivo_PreBlack_2026.pdf</code>{' '}
+              (PneuStore · UX Research), o relatório enviado ao CX que gerou o pedido deste dashboard. Semana 14/10 a 20/10/2026, comparada
+              com o mesmo período de 2025. GA4: sessões, conversão e receita estimada (pedidos × ticket médio) do site inteiro. Clarity:
+              passagem entre etapas e dead clicks por sessão, por dispositivo — "sem sequência validada" (não é uma taxa de abandono) e com
+              o desktop de dead clicks ainda não analisado. A cobertura do Clarity sobre as sessões do GA4 mudou de 2,5% em 2025 para 86% em
+              2026, o que limita a comparação direta entre os dois anos.
             </p>
           </div>
           <div className="rounded-[var(--radius-control)] border border-[var(--color-border)] p-3.5">
-            <h3 className="text-ds-base font-semibold text-[var(--color-foreground)]">Microsoft Clarity</h3>
+            <h3 className="text-ds-base font-semibold text-[var(--color-foreground)]">GA4 / Looker Studio (canal e marca, em "Aquisição e produtos")</h3>
             <p className="mt-1 text-ds-sm">
-              Período: 27/10/2026 a 29/10/2026 (3 dias fechados — janela máxima da API pública de Data Export). Sinais de atrito (dead
-              clicks, rage clicks, quick backs) para as 6 páginas de checkout, agregados para todos os dispositivos (
-              <code className="rounded bg-[var(--color-surface-muted)] px-1 py-0.5">device: &quot;all&quot;</code>, sem divisão por
-              dispositivo nesta extração). Não comparável ao GA4 (RA-07); páginas são navegação, não eventos de e-commerce — sem cálculo de
-              abandono (D-05).
+              Período: 02/10/2026 a 29/10/2026 (rolante). Extraído manualmente: exportação em PDF do Looker Studio, processada por{' '}
+              <code className="rounded bg-[var(--color-surface-muted)] px-1 py-0.5">04-validacao/scripts/looker-pdf-cli.mjs</code>. Status
+              parcial — não da GA4 Data API diretamente; usuários e parte da receita por canal aproximados; sem produtos individuais nem
+              sessões/pedidos por canal nesta extração.
             </p>
           </div>
         </CardContent>

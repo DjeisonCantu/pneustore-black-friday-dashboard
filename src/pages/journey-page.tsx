@@ -1,63 +1,62 @@
-// Jornada de compra — atualização de 30/10/2026: "Conversão por dispositivo"
-// e "Etapas da jornada" (derivados de src/data/mock/) foram removidos a
-// pedido do dono do projeto ("preciso que NADA seja fictício, tudo seja
-// real" — uso pela equipe CX). Nenhuma fonte real com granularidade por
-// dispositivo ou por etapa do funil está disponível hoje (precisaria da GA4
-// Data API, sem acesso, ou de um novo relatório do Looker exportado para
-// esse fim) — em vez de inventar essa granularidade, as seções foram
-// removidas, não substituídas por outro dado fictício. "Abandono por etapa"
-// continua como estava: não é dado fictício, é um aviso honesto de
-// metodologia pendente (D-05).
+// Jornada de compra — atualização de 30/10/2026: o painel do Clarity passou
+// a mostrar exatamente os números do "Resumo Executivo Pré-Black"
+// (PneuStore_Resumo_Executivo_PreBlack_2026.pdf, 14 a 20/10/2026) — o
+// relatório que gerou o pedido deste dashboard — em vez do antigo snapshot
+// agregado de 6 páginas de checkout. "Abandono por etapa" continua como
+// estava: a passagem entre etapas do relatório é "sem sequência validada"
+// (ver nota do próprio relatório), então não substitui a metodologia de
+// abandono ainda pendente de aprovação (D-05).
 
-import { useMemo } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
 import { SectionHeading } from '@/components/common/section-heading'
 import { InfoTooltip } from '@/components/common/info-tooltip'
 import { ValidationState } from '@/components/common/state-views'
-import { ClarityRealSignalsPanel } from '@/components/journey/clarity-real-signals-panel'
-import { useFilters } from '@/hooks/use-filters'
+import { ClarityStageSignalsPanel } from '@/components/journey/clarity-stage-signals-panel'
+import { ClarityYoyPanel } from '@/components/journey/clarity-yoy-panel'
 import { useRegisterPageExport } from '@/hooks/use-register-export'
 import { buildRealExportHeader } from '@/lib/export-metadata'
-import { resolvePeriodRange } from '@/data/selectors'
 import { INDICATORS } from '@/data/indicators'
-import { useClarityJourneySignals } from '@/data/clarity/use-clarity-journey'
-import { buildClarityJourneyView, filterClarityJourneyViewByDevice } from '@/data/clarity/adapter'
-import { evaluateClarityPeriodCoverage, type ClarityPeriodCoverage } from '@/data/clarity/coverage'
+import {
+  CLARITY_DEAD_CLICKS_2026,
+  CLARITY_FUNNEL_2026,
+  CLARITY_YOY,
+  PRE_BLACK_PRIORITIES,
+  PRE_BLACK_REPORT_PERIOD,
+} from '@/data/real/pre-black-executive-report'
+import { formatPercent } from '@/lib/format'
 
 export function JourneyPage() {
-  const [filters] = useFilters()
-
-  // Sinais comportamentais do Clarity — camada assíncrona separada do
-  // DataProvider síncrono (decisão arquitetural da Etapa C3, ver
-  // 04-validacao/05-mapeamento-frontend.md, seção 11). Em desenvolvimento
-  // carrega fixtures fictícias; em produção carrega o snapshot real embutido
-  // (atualização de 30/10/2026) — ver src/data/clarity/use-clarity-journey.ts.
-  const clarity = useClarityJourneySignals()
-  const isRealClarityData = !import.meta.env.DEV
-  const clarityView = useMemo(() => {
-    if (!clarity.snapshot) return null
-    return filterClarityJourneyViewByDevice(buildClarityJourneyView(clarity.snapshot), filters.device)
-  }, [clarity.snapshot, filters.device])
-  const selectedRange = useMemo(() => resolvePeriodRange(filters), [filters])
-  const clarityPeriodCoverage: ClarityPeriodCoverage = useMemo(
-    () => (clarityView ? evaluateClarityPeriodCoverage(selectedRange, clarityView.period) : 'full'),
-    [clarityView, selectedRange],
-  )
-
   useRegisterPageExport('Jornada de compra', () => {
     const header = buildRealExportHeader('Jornada de compra')
-    const clarityLine =
-      clarity.status === 'success' || clarity.status === 'stale'
-        ? `_Sinais do Clarity: ${isRealClarityData ? 'dados REAIS' : 'dados fictícios (ambiente de desenvolvimento)'}, extração de ${clarityView?.period.from} a ${clarityView?.period.to}${clarity.status === 'stale' ? ' — desatualizados' : ''}._`
-        : '_Sinais do Clarity: fonte ainda não configurada nesta instalação (ver 04-validacao/13-plano-ativacao-clarity.md)._'
     const lines = [
       header,
       '## Abandono por etapa',
       '',
       '_Metodologia em validação (D-05) — não calculado nesta versão._',
       '',
-      clarityLine,
+      `## Passagem entre etapas (Clarity, ${PRE_BLACK_REPORT_PERIOD.from} a ${PRE_BLACK_REPORT_PERIOD.to})`,
+      '',
+      '| Etapa | Mobile | Desktop |',
+      '|---|---|---|',
+      ...CLARITY_FUNNEL_2026.steps.map((s) => `| ${s.label} | ${formatPercent(s.mobile, 0)} | ${formatPercent(s.desktop, 0)} |`),
+      '',
+      `_${CLARITY_FUNNEL_2026.note}_`,
+      '',
+      '## Dead clicks por sessão',
+      '',
+      '| Etapa | Mobile | Desktop |',
+      '|---|---|---|',
+      ...CLARITY_DEAD_CLICKS_2026.steps.map((s) => `| ${s.label} | ${s.mobile} | ${s.desktop} |`),
+      '',
+      `_${CLARITY_DEAD_CLICKS_2026.note}_`,
+      '',
+      '## Comparação anual (Clarity)',
+      '',
+      `Cobertura do Clarity: ${formatPercent(CLARITY_YOY.clarityCoverageOfGa4SessionsPercent.y2025, 1)} das sessões do GA4 em 2025 e ${formatPercent(CLARITY_YOY.clarityCoverageOfGa4SessionsPercent.y2026, 1)} em 2026.`,
+      '',
+      '## Prioridades antes da Black Friday',
+      '',
+      ...PRE_BLACK_PRIORITIES.map((p) => `- **${p.title}** (${p.owner}): ${p.detail}`),
     ]
     return lines.join('\n')
   })
@@ -74,38 +73,30 @@ export function JourneyPage() {
         <CardContent>
           <ValidationState
             title="Metodologia em validação"
-            description="A forma de calcular abandono entre etapas (D-05) ainda não foi aprovada por Analytics/UX. Ver 'Sobre os dados' para detalhes."
+            description="A forma de calcular abandono entre etapas (D-05) ainda não foi aprovada por Analytics/UX. A passagem entre etapas abaixo (Clarity) é 'sem sequência validada', conforme o próprio relatório — não é uma taxa de abandono. Ver 'Sobre os dados' para detalhes."
           />
         </CardContent>
       </Card>
 
-      <ClarityRealSignalsPanel
-        status={clarity.status}
-        view={clarityView}
-        errors={clarity.errors}
-        periodCoverage={clarityPeriodCoverage}
-        isReal={isRealClarityData}
-        onReload={clarity.reload}
-      />
+      <ClarityStageSignalsPanel />
+      <ClarityYoyPanel />
 
       <Card className="print-break-inside-avoid">
         <CardHeader>
-          <CardTitle>Notas de investigação</CardTitle>
+          <CardTitle>Prioridades antes da Black Friday</CardTitle>
         </CardHeader>
         <CardContent>
-          <ul className="list-disc space-y-1.5 pl-4 text-ds-base text-[var(--color-muted-foreground)]">
-            <li>
-              <Badge variant="warning">hipótese</Badge> Gravações do Clarity sugerem idas e voltas entre carrinho e checkout — ainda sem
-              frequência medida (ver 07-riscos-pendencias.md, A-03).
-            </li>
-            <li>
-              <Badge variant="warning">hipótese</Badge> Cliques repetidos em cartões de instalação/frete podem indicar dificuldade de
-              entendimento da oferta — não comprovado.
-            </li>
-            <li>
-              <Badge variant="warning">hipótese</Badge> Cadastro incompleto pode estar bloqueando o pagamento em parte das sessões — a
-              confirmar com teste de usuários (Fase 5 do roadmap).
-            </li>
+          <ul className="space-y-2.5 text-ds-base">
+            {PRE_BLACK_PRIORITIES.map((item, index) => (
+              <li key={item.title} className="flex gap-2.5">
+                <span className="font-semibold text-[var(--color-primary)]">{index + 1}.</span>
+                <div>
+                  <span className="font-medium">{item.title}</span>
+                  <span className="text-[var(--color-muted-foreground)]"> — {item.detail}</span>
+                  <span className="ml-1.5 text-ds-sm text-[var(--color-primary)]">({item.owner})</span>
+                </div>
+              </li>
+            ))}
           </ul>
         </CardContent>
       </Card>

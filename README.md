@@ -4,15 +4,16 @@ Aplicação frontend React + TypeScript que implementa o dashboard PneuStore Bla
 Monitor, conforme `01-planejamento/` (Missão 02, maquete visual) e a Missão 04 (integração real
 parcial via extração manual).
 
-**Status desta entrega (atualizado 30/10/2026):** a maquete visual (Missão 02) continua com dados
-fictícios para a maior parte das telas — nenhuma autenticação corporativa real (SSO) e nenhuma
-conexão automática com GA4/Clarity foram implementadas. Duas exceções, claramente marcadas com o
-selo verde "REAL" (nunca com a faixa "DADOS FICTÍCIOS"): um snapshot real do GA4/Looker Studio na
-Visão Geral e sinais reais do Clarity na Jornada de compra, os dois extraídos **manualmente**
-(sem automação de navegador nem API oficial — ver [Dados reais embutidos](#dados-reais-embutidos--fontes-e-períodos)).
-O dashboard está publicado no GitHub Pages (repositório público, plano gratuito) atrás de um login
-simples e deliberadamente não seguro (ver [Login](#login)) — ver
-[Pendências para a integração real](#pendências-para-a-integração-real).
+**Status desta entrega (atualizado 30/10/2026):** o dashboard não mostra mais nenhum dado
+fictício — todo número vem do GA4 ou do Microsoft Clarity (nunca uma terceira fonte), extraídos
+**manualmente** (sem automação de navegador nem API oficial — ver
+[Dados reais embutidos](#dados-reais-embutidos--fontes-e-períodos)). A fonte principal da Visão
+geral e da Jornada de compra é o "Resumo Executivo Pré-Black" — o relatório de UX Research enviado
+ao CX que motivou a criação deste dashboard; "Aquisição e produtos" usa um snapshot mais amplo do
+Looker Studio só para canal/marca. Nenhuma autenticação corporativa real (SSO) e nenhuma conexão
+automática com GA4/Clarity foram implementadas. O dashboard está publicado no GitHub Pages
+(repositório público, plano gratuito) atrás de um login simples e deliberadamente não seguro (ver
+[Login](#login)) — ver [Pendências para a integração real](#pendências-para-a-integração-real).
 
 ## Como executar localmente
 
@@ -105,24 +106,22 @@ src/
 
 ## Dados reais embutidos — fontes e períodos
 
-Além da maquete fictícia (seção abaixo), duas fontes **reais** ficam embutidas no bundle, validadas
-em tempo de execução contra o mesmo tipo de contrato Zod da maquete, e exibidas com o selo verde
-"REAL" (nunca com o rótulo "DADOS FICTÍCIOS" — ver `src/components/common/fictitious-banner.tsx`):
+Desde 30/10/2026 o dashboard não mostra mais nenhum dado fictício. Duas fontes **reais** ficam
+embutidas no bundle, ambas exibidas com o selo verde "REAL":
 
-| Fonte | Arquivo | Período | Como foi extraído | Limitações principais |
+| Fonte | Usada em | Arquivo | Período | Como foi extraído |
 |---|---|---|---|---|
-| GA4 / Looker Studio | `src/data/real/ga4-real-snapshot.json` (`src/data/real/real-overview.ts`) | 02/10/2026 a 29/10/2026 | Exportação manual em PDF do Looker Studio, processada por `04-validacao/scripts/looker-pdf-cli.mjs` | `status: "partial"`; usuários e parte da receita por canal aproximados; taxa de conversão não incluída (D-04); ver `metadata.limitations` no próprio arquivo |
-| Microsoft Clarity | `src/data/real/clarity-real-snapshot.json` (`src/data/clarity/use-clarity-journey.ts`, fora do DEV) | 27/10/2026 a 29/10/2026 (3 dias fechados) | `query-analytics-dashboard` (MCP do Clarity), agregado manualmente por `05-atualizacoes-diarias/` | Agregado para todos os dispositivos (`device: "all"`, sem segmentação); janela pública de 1–3 dias; não comparável ao GA4 (RA-07); sem cálculo de abandono (D-05) |
+| Resumo Executivo Pré-Black (PDF, UX Research) | Visão geral, Jornada de compra | `src/data/real/pre-black-executive-report.ts` | 14/10 a 20/10/2026, comparado com 14/10 a 20/10/2025 | Transcrição manual do relatório `PneuStore_Resumo_Executivo_PreBlack_2026.pdf` — o próprio relatório que motivou este dashboard. GA4 (sessões, conversão, receita estimada) e Clarity (passagem entre etapas, dead clicks, comparação anual) |
+| GA4 / Looker Studio | Aquisição e produtos (canal/marca) | `src/data/real/ga4-real-snapshot.json` (`src/data/real/real-overview.ts`) | 02/10/2026 a 29/10/2026 | Exportação manual em PDF do Looker Studio, processada por `04-validacao/scripts/looker-pdf-cli.mjs` |
 
-Nenhuma das duas fontes é atualizada automaticamente — ver "Atualização de dados" abaixo.
+O "Resumo Executivo Pré-Black" é um módulo estático simples (sem contrato Zod nem pipeline
+assíncrono) — é um relatório fechado de uma semana específica, não um snapshot revalidado a cada
+atualização diária. Ver limitações de cada métrica diretamente nos painéis ou em "Sobre os dados".
 
-### Atualização de dados
-
-Não há job agendado, conexão de API nem automação de navegador (proibida explicitamente neste
-projeto). A atualização é manual: exportar o PDF do Looker Studio e os agregados do Clarity, rodar
-`looker-pdf-cli.mjs` sobre o PDF, revisar o rascunho gerado e substituir os dois arquivos JSON
-acima à mão (ver `04-validacao/19-plano-integracao-via-looker-export.md` e
-`04-validacao/13-plano-ativacao-clarity.md`).
+Nenhuma das duas fontes é atualizada automaticamente — a atualização é manual (sem job agendado,
+conexão de API nem automação de navegador, proibida explicitamente neste projeto): um novo PDF do
+relatório executivo exige editar `pre-black-executive-report.ts` à mão; um novo export do Looker
+Studio passa por `looker-pdf-cli.mjs` (ver `04-validacao/19-plano-integracao-via-looker-export.md`).
 
 ### Login
 
@@ -133,43 +132,31 @@ fonte público, sem servidor de autenticação, sem hashing, sem expiração de 
 repositório público (plano gratuito do GitHub Pages) vê a credencial e, de qualquer forma, o site
 publicado é sempre alcançável publicamente por quem tiver o link, independentemente do login.
 
-## Dados demonstrativos — isolamento e regras seguidas
+## Camada de mock (Missão 02) — não usada mais pela UI
 
-Toda a camada de dados fica em `src/data/mock/`, claramente separada do restante da aplicação, e
-segue as regras obrigatórias do planejamento:
+`src/data/mock/`, `src/data/selectors.ts` e os view-models fictícios continuam no repositório como
+legado da Missão 02 (maquete visual original), mas **nenhuma tela usa mais esses dados** desde
+30/10/2026 — Visão geral, Jornada de compra e Aquisição e produtos foram todas convertidas para
+dado real (ver seção anterior). Essa camada só é referenciada hoje por: `src/data/providers/` (o
+contrato de schema do GA4, reaproveitado pelo dado real) e o resolvedor de período
+(`resolvePeriodRange`, usado pela barra de filtros do cabeçalho para calcular datas). Pode ser
+removida por completo numa limpeza futura, se a equipe decidir que não vale a pena mantê-la.
 
-- **RA-06 (não misturar dado real com fictício):** nenhum valor exibido vem dos PDFs em
-  `00-referencias/`. Nomes de marca/produto também são inventados (`TrilhaMax`, `ViaPneu` etc.) —
-  propositalmente diferentes dos nomes citados no relatório de referência.
-- **Marca d'água permanente:** uma faixa fixa "DADOS FICTÍCIOS" aparece no topo de toda tela
-  (`src/components/common/fictitious-banner.tsx`) e nos arquivos exportados.
-- **Filtros afetam os dados, não só a aparência:** período, dispositivo e comparação são
-  resolvidos em `src/data/selectors.ts` e realmente recortam/agregam a série diária gerada —
-  troque o período ou o dispositivo e os números mudam de verdade.
-- **Geração determinística:** um PRNG com semente (`src/data/mock/seed.ts`) garante que os mesmos
-  filtros sempre produzam os mesmos números (útil para conferência e capturas de tela), sem serem
-  números fixos "decorativos".
 - **Indicadores sem metodologia aprovada não são calculados:** por decisão D-05 (ainda não
   aprovada), o dashboard **não** calcula abandono por etapa nem taxa de passagem no funil — a
-  Jornada de compra mostra apenas volumes por etapa, com unidade explícita, e um estado
-  "Metodologia em validação" no lugar do cálculo (RF-06, RF-07, RA-02, RA-03).
+  Jornada de compra mostra um estado "Metodologia em validação" no lugar do cálculo (RF-06, RF-07,
+  RA-02, RA-03).
 - **Categoria de produto:** como o preenchimento de `item_category` não está confirmado (Q-04), o
   ranking de categorias mostra um estado de validação em vez de números.
-- **Sinais do Clarity:** são um "espaço reservado" (RF-09) com dados ilustrativos, claramente
-  identificado como pendente de integração real (D-12/Q-10) — nunca comparado com o GA4 (RA-07).
-- **Data de referência da maquete:** o dataset fictício usa 27/11/2026 (a própria Black Friday)
-  como "hoje", para permitir demonstrar os presets "Hoje" e "Semana da Black" e as comparações
-  anuais sem depender da data real do computador.
 
 ## Funcionalidades implementadas
 
-- Navegação entre as 4 áreas, com filtros persistidos na URL (compartilháveis).
-- Filtros de período (presets + personalizado), dispositivo e comparação (período anterior /
-  mesmo período de 2025, alinhado por dia da semana conforme D-07).
-- Gráficos interativos (Recharts): série temporal com seleção de métrica e granularidade
-  diária/horária automática, barras por dispositivo, barras horizontais de canal.
-- Tabelas ordenadas, com top 10/20 + busca (produtos) e "ver todos" (origem/mídia).
-- Estados de componente: carregando (esqueleto), sem dados, fonte indisponível e em validação —
+- Navegação entre as 4 áreas (Visão geral, Jornada de compra, Aquisição e produtos, Sobre os
+  dados). A barra de filtros (período/dispositivo) do cabeçalho ainda existe na interface, mas não
+  afeta nenhuma das fontes reais atuais — todas são de período fixo (ver tabela acima). Candidata a
+  simplificação futura.
+- Tabelas com top 10 + "ver todos" (canais) em Aquisição e produtos.
+- Estados de componente: sem dados, fonte indisponível e em validação —
   veja o seletor "Cenário" no cabeçalho (exclusivo desta maquete) para alternar entre eles sem
   esperar um cenário real acontecer.
 - Exportação PDF (impressão) e Markdown (download local), ambas com filtros, período, fontes,
@@ -184,15 +171,16 @@ Lista consolidada a partir de `01-planejamento/05-requisitos-tecnicos.md` e
 
 | Pendência | Onde fica hoje nesta maquete |
 |---|---|
-| Conexão com a GA4 Data API (conta de serviço, projeto sem faturamento) | Sem acesso disponível (confirmado pelo responsável) — snapshot real extraído manualmente de PDF do Looker Studio, ver [Dados reais embutidos](#dados-reais-embutidos--fontes-e-períodos); indicadores por filtro (período/dispositivo personalizados) continuam vindo de `src/data/mock/` |
-| Conexão com a Data Export API do Clarity (D-12, Q-10) | Sinais de atrito reais embutidos (consulta manual via `query-analytics-dashboard`), agregados sem segmentação por dispositivo — ver [Dados reais embutidos](#dados-reais-embutidos--fontes-e-períodos) |
-| Autenticação corporativa via SSO (D-02, SEG-01) | Cabeçalho mostra uma "Conta corporativa (simulada)" sem login real — ver `src/components/layout/user-menu.tsx` |
-| Job de coleta/snapshots agendados (D-03, INT-04) | Dados gerados em memória no navegador a cada carregamento |
-| Fórmula oficial de conversão (D-04) e metodologia de jornada/abandono (D-05) | Fórmula "pedidos ÷ sessões" usada como exemplo; abandono não é calculado |
-| Confirmação dos eventos de e-commerce e de `item_category` no stream web (Q-04) | Ranking de categorias fica em "validação"; volumes de carrinho/checkout são ilustrativos |
-| Limite oficial de variação relevante (D-08) e tolerância de reconciliação (D-09) | Usa ±15% como exemplo, sinalizado como pendente de aprovação |
+| Conexão com a GA4 Data API (conta de serviço, projeto sem faturamento) | Sem acesso disponível (confirmado pelo responsável) — números transcritos manualmente do Resumo Executivo Pré-Black e de um PDF do Looker Studio, ver [Dados reais embutidos](#dados-reais-embutidos--fontes-e-períodos) |
+| Conexão com a Data Export API do Clarity (D-12, Q-10) | Sinais de atrito reais, transcritos manualmente do Resumo Executivo Pré-Black (passagem entre etapas e dead clicks, por dispositivo) — ver [Dados reais embutidos](#dados-reais-embutidos--fontes-e-períodos) |
+| Autenticação corporativa via SSO (D-02, SEG-01) | Login simples e não seguro — ver [Login](#login) |
+| Job de coleta/snapshots agendados (D-03, INT-04) | Atualização manual (editar os arquivos reais à mão a cada novo relatório/export) |
+| Fórmula oficial de conversão (D-04) | GA4_WEEKLY mostra a conversão do relatório (pedidos ÷ sessões, calculada pelo próprio GA4) — ainda não é uma fórmula oficial aprovada para o dashboard em geral |
+| Metodologia de jornada/abandono (D-05) | "Abandono por etapa" mostra um aviso de metodologia pendente; a passagem entre etapas do Clarity é "sem sequência validada" (nota do próprio relatório), não uma taxa de abandono |
+| Confirmação dos eventos de e-commerce e de `item_category` no stream web (Q-04) | Ranking de categorias fica em "validação"; não há dado real de produtos individuais nesta extração |
+| Limite oficial de variação relevante (D-08) e tolerância de reconciliação (D-09) | Não há mais cálculo de variação além das comparações 2025×2026 já prontas no Resumo Executivo Pré-Black |
 | Hospedagem definitiva (D-01) | Publicado no GitHub Pages (repositório público, plano gratuito) via `.github/workflows/deploy.yml` — decisão provisória, não uma hospedagem corporativa definitiva |
-| Tratamento de tablet (D-06), janela da Black (D-10), frequência de atualização (D-11) | Tablet tratado como categoria própria; janela 24/11–01/12 usada como exemplo |
+| Tratamento de tablet (D-06), janela da Black (D-10), frequência de atualização (D-11) | Sem dado real de tablet nas fontes atuais; janela de 14 a 20/10 é a do relatório mais recente, não a da Black Friday em si |
 
 ## Dependências e licenças
 
@@ -221,10 +209,9 @@ execução — todas operam inteiramente no navegador, sobre os dados fictícios
 ## Critérios de aceite — status nesta missão
 
 - [x] Interface navegável em desktop e mobile.
-- [x] Filtros funcionais (afetam os dados exibidos, não só a aparência).
-- [x] Gráficos e tabelas coerentes com os dados demonstrativos (mesma base agregada).
 - [x] Nenhum indicador sem unidade e fonte (ícone ⓘ em cada indicador + rodapé de fonte/período).
-- [x] Nenhum dado fictício apresentado como real (faixa fixa + rótulo nas exportações).
+- [x] Nenhum dado fictício em lugar nenhum do dashboard (atualização de 30/10/2026) — todo número
+      vem do GA4 ou do Clarity, nunca de `src/data/mock/`.
 - [x] Nenhuma chamada a API externa de analytics.
 - [x] Nenhuma dependência de serviço pago.
 - [x] Deploy realizado no GitHub Pages (atualização de 30/10/2026) — ver [Dados reais embutidos](#dados-reais-embutidos--fontes-e-períodos).

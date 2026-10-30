@@ -1,40 +1,36 @@
-// Visão geral — atualização de 30/10/2026: os cartões de KPI, o gráfico de
-// evolução temporal, "Variações relevantes" e a "Divisão por dispositivo"
-// (todos derivados de src/data/mock/) foram removidos a pedido do dono do
-// projeto ("preciso que NADA seja fictício, tudo seja real" — uso pela
-// equipe CX). Nenhuma dessas seções tinha uma fonte real equivalente com
-// granularidade diária/por dispositivo (o PDF do Looker só dá um total
-// agregado do período — ver RealDataPanel) — em vez de inventar essa
-// granularidade, a seção foi removida, não substituída por outro dado
-// fictício. Esta página agora mostra só o que é real.
+// Visão geral — atualização de 30/10/2026: o painel principal passou a
+// mostrar exatamente os números do "Resumo Executivo Pré-Black"
+// (PneuStore_Resumo_Executivo_PreBlack_2026.pdf, 14 a 20/10/2026 vs 2025) —
+// o relatório que gerou o pedido deste dashboard — em vez do antigo
+// agregado de período (02/10 a 29/10, sem comparação). O agregado antigo
+// continua existindo só como fonte de canal/marca da página "Aquisição e
+// produtos" (src/data/real/real-overview.ts) — mostrar os dois painéis de
+// GA4 juntos aqui seria duplicar informação sem necessidade.
 
-import { RealDataPanel } from '@/components/real-data/real-data-panel'
+import { Ga4WeeklyPanel } from '@/components/real-data/ga4-weekly-panel'
 import { SectionHeading } from '@/components/common/section-heading'
 import { useRegisterPageExport } from '@/hooks/use-register-export'
 import { buildRealExportHeader } from '@/lib/export-metadata'
-import { loadRealOverview } from '@/data/real/real-overview'
-import { formatCurrencyCompactBRL, formatInt } from '@/lib/format'
+import { GA4_WEEKLY, PRE_BLACK_REPORT_COMPARISON_PERIOD, PRE_BLACK_REPORT_PERIOD, percentDelta } from '@/data/real/pre-black-executive-report'
+import { formatCurrencyBRL, formatCurrencyCompactBRL, formatInt, formatPercent } from '@/lib/format'
 
 export function OverviewPage() {
   useRegisterPageExport('Visão geral', () => {
     const header = buildRealExportHeader('Visão geral')
-    const view = loadRealOverview()
-    if (!view) {
-      return [header, '', '_O snapshot real embutido não passou na validação — nada é exportado._'].join('\n')
-    }
     const lines = [
       header,
+      '## GA4 — comparação semanal',
       '',
-      '## Dados reais (Looker Studio) — total do período',
+      `_Semana ${PRE_BLACK_REPORT_PERIOD.from} a ${PRE_BLACK_REPORT_PERIOD.to} (2026) vs ${PRE_BLACK_REPORT_COMPARISON_PERIOD.from} a ${PRE_BLACK_REPORT_COMPARISON_PERIOD.to} (2025)._`,
       '',
-      `_Período ${view.period.from} a ${view.period.to}._`,
+      '| Indicador | 2025 | 2026 | Variação |',
+      '|---|---|---|---|',
+      `| Sessões | ${formatInt(GA4_WEEKLY.sessions.y2025)} | ${formatInt(GA4_WEEKLY.sessions.y2026)} | ${formatPercent(percentDelta(GA4_WEEKLY.sessions), 1)} |`,
+      `| Conversão | ${formatPercent(GA4_WEEKLY.conversionRatePercent.y2025)} | ${formatPercent(GA4_WEEKLY.conversionRatePercent.y2026)} | ${formatPercent(percentDelta(GA4_WEEKLY.conversionRatePercent), 1)} |`,
+      `| Receita estimada | ${formatCurrencyCompactBRL(GA4_WEEKLY.revenueEstimatedBRL.y2025)} | ${formatCurrencyCompactBRL(GA4_WEEKLY.revenueEstimatedBRL.y2026)} | ${formatPercent(percentDelta(GA4_WEEKLY.revenueEstimatedBRL), 1)} |`,
+      `| Ticket médio | ${formatCurrencyBRL(GA4_WEEKLY.averageTicketBRL.y2025)} | ${formatCurrencyBRL(GA4_WEEKLY.averageTicketBRL.y2026)} | ${formatPercent(percentDelta(GA4_WEEKLY.averageTicketBRL), 1)} |`,
       '',
-      '| Indicador | Valor |',
-      '|---|---|',
-      `| Sessões | ${view.sessions === null ? '—' : formatInt(view.sessions)} |`,
-      `| Usuários | ${view.users === null ? '—' : formatInt(view.users)} |`,
-      `| Pedidos | ${view.orders === null ? '—' : formatInt(view.orders)} |`,
-      `| Receita | ${view.revenue === null ? '—' : formatCurrencyCompactBRL(view.revenue)} |`,
+      `_${GA4_WEEKLY.note}_`,
       '',
       'Detalhamento por canal e por marca: ver exportação de "Aquisição e produtos".',
     ]
@@ -44,7 +40,7 @@ export function OverviewPage() {
   return (
     <div className="space-y-5">
       <SectionHeading title="Visão geral" question="O site está vendendo como esperado agora?" />
-      <RealDataPanel />
+      <Ga4WeeklyPanel />
     </div>
   )
 }
