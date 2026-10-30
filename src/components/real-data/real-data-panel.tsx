@@ -1,4 +1,8 @@
-// Painel de dados REAIS — Missão 04, Etapa C5.2.
+// Painel de dados REAIS — Missão 04, Etapa C5.2 (criado) / atualização de
+// 30/10/2026 (tabelas de canal e marca movidas para a página "Aquisição e
+// produtos", que agora também é 100% real — ver acquisition-page.tsx — para
+// não duplicar a mesma tabela em duas telas; este painel ficou só com os
+// totais do período e um link para o detalhamento).
 //
 // Deliberadamente isolado de qualquer card/gráfico fictício da página: nunca
 // mistura um número real com um número fictício no mesmo elemento visual,
@@ -6,10 +10,10 @@
 // comparar), e nunca finge granularidade diária/por dispositivo que a fonte
 // não tem — ver src/data/real/real-overview.ts.
 
+import { Link } from 'react-router-dom'
 import { BadgeCheck, Inbox } from 'lucide-react'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { loadRealOverview } from '@/data/real/real-overview'
 import { formatCurrencyCompactBRL, formatDateShort, formatDateTime, formatInt } from '@/lib/format'
 
@@ -57,7 +61,7 @@ export function RealDataPanel() {
         <p className="text-ds-sm text-[var(--color-muted-foreground)]">
           Total do período <strong className="text-[var(--color-foreground)]">{formatDateShort(periodFrom)} a {formatDateShort(periodTo)}</strong> — extraído
           manualmente de um PDF do Looker Studio em {formatDateTime(new Date(view.extractedAt))}. Nunca segmentado por dia nem por dispositivo
-          (ver limitações) — não comparar com os cartões fictícios abaixo.
+          (ver limitações).
         </p>
 
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
@@ -67,61 +71,14 @@ export function RealDataPanel() {
           <MiniStat label="Receita" value={view.revenue === null ? '—' : formatCurrencyCompactBRL(view.revenue)} />
         </div>
 
-        {view.channels.length > 0 && (
-          <div>
-            <p className="mb-1.5 text-ds-sm font-medium text-[var(--color-muted-foreground)]">Origem do tráfego (receita por origem/mídia)</p>
-            <div className="scroll-thin w-full overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Canal</TableHead>
-                    <TableHead>Origem / mídia</TableHead>
-                    <TableHead>Receita</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {view.channels.map((row) => (
-                    <TableRow key={`${row.channel}-${row.sourceMedium}`}>
-                      <TableCell className="font-medium">{row.channel}</TableCell>
-                      <TableCell>{row.sourceMedium ?? '—'}</TableCell>
-                      <TableCell>{formatCurrencyCompactBRL(row.revenue)}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          </div>
-        )}
-
-        {view.brands.length > 0 && (
-          <div>
-            <p className="mb-1.5 text-ds-sm font-medium text-[var(--color-muted-foreground)]">Produtos e marcas</p>
-            <div className="scroll-thin w-full overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Marca</TableHead>
-                    <TableHead>Itens vistos</TableHead>
-                    <TableHead>Itens adicionados*</TableHead>
-                    <TableHead>Itens comprados</TableHead>
-                    <TableHead>Receita do item</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {view.brands.map((row) => (
-                    <TableRow key={row.brand}>
-                      <TableCell className="font-medium">{row.brand}</TableCell>
-                      <TableCell>{formatInt(row.itemsViewed)}</TableCell>
-                      <TableCell>{formatInt(row.itemsAdded)}</TableCell>
-                      <TableCell>{formatInt(row.itemsPurchased)}</TableCell>
-                      <TableCell>{formatCurrencyCompactBRL(row.itemRevenue)}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-            <p className="mt-1 text-[11px] text-[var(--color-muted-foreground)]">*Estimado a partir de "%Add to Cart" do Looker — não é uma contagem bruta.</p>
-          </div>
+        {(view.channels.length > 0 || view.brands.length > 0) && (
+          <p className="text-ds-sm text-[var(--color-muted-foreground)]">
+            Detalhamento por canal de aquisição e por marca (mesmos dados reais) está em{' '}
+            <Link to="/aquisicao" className="font-medium text-[var(--color-primary)] hover:underline">
+              Aquisição e produtos →
+            </Link>
+            .
+          </p>
         )}
 
         {view.limitations.length > 0 && (

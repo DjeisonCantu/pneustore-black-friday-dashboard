@@ -4,7 +4,6 @@ import { Sheet, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui/s
 import { FilterBar } from '@/components/layout/filter-bar'
 import { LastUpdateStrip } from '@/components/layout/last-update-strip'
 import { ExportMenu } from '@/components/layout/export-menu'
-import { DemoScenarioSwitcher } from '@/components/layout/demo-scenario-switcher'
 import { ThemeToggle } from '@/components/layout/theme-toggle'
 import { UserMenu } from '@/components/layout/user-menu'
 import { useFilters } from '@/hooks/use-filters'
@@ -50,9 +49,6 @@ export function GlobalHeader() {
         </Sheet>
 
         <div className="flex items-center gap-2">
-          <div className="hidden xl:block">
-            <DemoScenarioSwitcher />
-          </div>
           <ThemeToggle />
           <ExportMenu />
           <UserMenu />
@@ -68,10 +64,6 @@ export function GlobalHeader() {
             ({comparisonLabel(filters.comparison)})
           </p>
         )}
-      </div>
-
-      <div className="block px-4 pb-2 xl:hidden">
-        <DemoScenarioSwitcher />
       </div>
     </header>
   )

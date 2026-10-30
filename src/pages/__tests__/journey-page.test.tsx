@@ -54,14 +54,13 @@ describe('JourneyPage — painel Clarity conectado (Etapa C3)', () => {
   beforeEach(() => clearAllForTests())
   afterEach(() => vi.useRealTimers())
 
-  it('indicadores comerciais (GA4) renderizam de forma síncrona, sem esperar o Clarity', async () => {
+  it('"Abandono por etapa" renderiza de forma síncrona, sem esperar o Clarity', async () => {
     renderJourneyPage('/jornada')
 
-    // Os cards de GA4 aparecem assim que o esqueleto de carregamento simulado
-    // termina — nenhum deles depende do carregamento assíncrono do Clarity.
-    await waitFor(() => expect(screen.getByText('Conversão por dispositivo')).toBeTruthy(), { timeout: 2000 })
-    expect(screen.getByText('Etapas da jornada')).toBeTruthy()
-    expect(screen.getByText('Abandono por etapa')).toBeTruthy()
+    // Atualização de 30/10/2026: "Conversão por dispositivo" e "Etapas da
+    // jornada" (fictícios) foram removidos — só "Abandono por etapa"
+    // (não é dado, é um aviso de metodologia pendente) continua síncrono.
+    await waitFor(() => expect(screen.getByText('Abandono por etapa')).toBeTruthy(), { timeout: 2000 })
   })
 
   it('painel Clarity aparece e carrega os dados fictícios de forma assíncrona', async () => {

@@ -1,34 +1,24 @@
-// Teste de exportação Markdown (Missão 04 — Etapa B2). A exportação PDF usa
-// window.print() do navegador e depende de inspeção visual manual — não é
-// automatizável neste conjunto de testes (registrado no relatório da missão).
+// Teste de exportação Markdown — atualizado em 30/10/2026: o cabeçalho
+// fictício (buildExportHeader) foi removido junto com todo o resto do dado
+// fictício do app. buildRealExportHeader é o único cabeçalho de exportação
+// agora, usado por todas as páginas.
 
 import { describe, expect, it } from 'vitest'
-import { buildExportHeader } from '../export-metadata'
-import type { Filters } from '@/types/common'
+import { buildRealExportHeader } from '../export-metadata'
 
-const filters: Filters = {
-  period: '7dias',
-  customRange: null,
-  device: 'desktop',
-  comparison: 'periodo-anterior',
-}
+describe('buildRealExportHeader', () => {
+  const markdown = buildRealExportHeader('Visão geral')
 
-describe('buildExportHeader — metadados obrigatórios da exportação (RF-18)', () => {
-  const markdown = buildExportHeader('Visão geral', filters)
-
-  it('marca claramente os dados como fictícios', () => {
-    expect(markdown).toContain('DADOS FICTÍCIOS')
+  it('nunca afirma que os dados são fictícios', () => {
+    expect(markdown).not.toContain('FICTÍCIO')
   })
 
-  it('inclui período, dispositivo, comparação, fonte e data de extração', () => {
-    expect(markdown).toMatch(/\*\*Período:\*\*/)
-    expect(markdown).toContain('Dispositivo:** Desktop')
-    expect(markdown).toMatch(/\*\*Comparação:\*\*/)
-    expect(markdown).toMatch(/\*\*Fontes:\*\*.*GA4/)
-    expect(markdown).toMatch(/\*\*Data de extração/)
+  it('identifica os dados como reais e aponta para "Sobre os dados"', () => {
+    expect(markdown).toContain('DADOS REAIS')
+    expect(markdown).toContain('Sobre os dados')
   })
 
-  it('nunca mistura o rótulo de dispositivo "Todos" quando um dispositivo específico foi filtrado', () => {
-    expect(markdown).not.toContain('Dispositivo:** Todos')
+  it('usa o título da página recebido', () => {
+    expect(markdown).toContain('# Visão geral — PneuStore · Site')
   })
 })

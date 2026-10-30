@@ -1,35 +1,16 @@
-import { formatDateRangeLabel, formatDateTime } from './format'
-import { comparisonLabel, periodLabel, resolveComparisonRange, resolvePeriodRange } from '@/data/selectors'
-import { MOCK_TODAY } from '@/data/mock/daily-series'
-import type { Filters } from '@/types/common'
-
-const DEVICE_LABELS: Record<string, string> = {
-  todos: 'Todos',
-  desktop: 'Desktop',
-  mobile: 'Mobile',
-  tablet: 'Tablet',
-}
-
-export function buildExportHeader(pageTitle: string, filters: Filters): string {
-  const range = resolvePeriodRange(filters)
-  const comparisonRange = resolveComparisonRange(filters)
-
-  const lines = [
+// Atualização de 30/10/2026: a antiga buildExportHeader (filtros + rótulo
+// fixo "DADOS FICTÍCIOS") foi removida — nenhuma página usa mais dados
+// fictícios, então um cabeçalho que afirma isso categoricamente deixou de
+// ser verdade. buildRealExportHeader é o único cabeçalho de exportação
+// agora, usado por todas as páginas (Visão geral, Jornada de compra,
+// Aquisição e produtos).
+export function buildRealExportHeader(pageTitle: string): string {
+  return [
     `# ${pageTitle} — PneuStore · Site`,
     '',
-    '> **DADOS FICTÍCIOS** — exportação gerada a partir da maquete da Missão 02. Não representa números reais de GA4, Clarity ou dos relatórios da PneuStore.',
-    '',
-    '## Metadados da exportação',
-    '',
-    `- **Período:** ${periodLabel(filters.period)} (${formatDateRangeLabel(range.from, range.to)})`,
-    `- **Dispositivo:** ${DEVICE_LABELS[filters.device]}`,
-    `- **Comparação:** ${comparisonLabel(filters.comparison)}${comparisonRange ? ` (${formatDateRangeLabel(comparisonRange.from, comparisonRange.to)})` : ''}`,
-    `- **Fontes:** GA4 (fictício), Microsoft Clarity (fictício — espaço reservado)`,
-    `- **Data de extração (simulada):** ${formatDateTime(MOCK_TODAY)}`,
+    '> **DADOS REAIS** — extração manual (Looker Studio e/ou Microsoft Clarity), sem automação de navegador nem acesso à API oficial. Ver "Sobre os dados" para fontes, períodos e limitações completas de cada extração.',
     '',
     '---',
     '',
-  ]
-
-  return lines.join('\n')
+  ].join('\n')
 }

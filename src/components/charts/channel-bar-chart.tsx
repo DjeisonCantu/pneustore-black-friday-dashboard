@@ -1,8 +1,14 @@
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { formatCurrencyCompactBRL, formatPercent } from '@/lib/format'
-import type { ChannelRow } from '@/data/mock/channels'
 
-export function ChannelBarChart({ data }: { data: ChannelRow[] }) {
+/** Forma mínima que o gráfico precisa — estrutural, não ligada a uma fonte específica (mock ou real). */
+export interface ChannelBarDatum {
+  channel: string
+  revenue: number
+  revenueShare: number
+}
+
+export function ChannelBarChart({ data }: { data: ChannelBarDatum[] }) {
   return (
     <ResponsiveContainer width="100%" height={Math.max(220, data.length * 38)}>
       <BarChart data={data} layout="vertical" margin={{ top: 4, right: 24, left: 8, bottom: 0 }}>
@@ -25,7 +31,7 @@ export function ChannelBarChart({ data }: { data: ChannelRow[] }) {
         <Tooltip
           formatter={
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            ((value: number, _name: string, item: { payload?: ChannelRow }) => {
+            ((value: number, _name: string, item: { payload?: ChannelBarDatum }) => {
               const share = item?.payload?.revenueShare ?? 0
               return [`${formatCurrencyCompactBRL(value)} (${formatPercent(share)})`, 'Receita']
             }) as any
