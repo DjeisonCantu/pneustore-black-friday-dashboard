@@ -21,7 +21,7 @@
 import { z } from 'zod'
 import type { SnapshotValidator } from '@/data/async-snapshot/types'
 
-export const SNAPSHOT_SCHEMA_VERSION = '1.3.0'
+export const SNAPSHOT_SCHEMA_VERSION = '1.4.0'
 
 export const DeviceMetricSetSchema = z.object({
   desktop: z.number().nonnegative(),
@@ -146,6 +146,22 @@ export const AcquisitionChannelRowSchema = z.object({
 export type AcquisitionChannelRow = z.infer<typeof AcquisitionChannelRowSchema>
 
 /**
+ * Participação por canal agregado do Looker Studio (seção "Participação por
+ * canal" do PDF) — Etapa de 30/10/2026. Diferente de `AcquisitionChannelRowSchema`
+ * (que é por origem/mídia, ex. "google / cpc", podendo repetir o mesmo canal
+ * em várias linhas): aqui cada canal aparece uma única vez, já com a %
+ * participação na receita e a variação vs. o período anterior que o próprio
+ * Looker calcula — nunca recalculados aqui, só armazenados como a fonte
+ * informa. Campo opcional: nem toda extração traz essa seção do PDF.
+ */
+export const ChannelShareRowSchema = z.object({
+  channel: z.string().min(1),
+  revenueSharePercent: z.number().min(0).max(100),
+  comparisonChangePercent: z.number(),
+})
+export type ChannelShareRow = z.infer<typeof ChannelShareRowSchema>
+
+/**
  * Produtos e marcas (IND-08) — Missão 04, Etapa C4. Mesma forma crua de
  * `ProductRow`/`BrandRow` (`src/data/mock/products.ts`): contagens de item,
  * nunca uma taxa. `category` é opcional e nunca inventada — o preenchimento
@@ -189,6 +205,8 @@ export const DailySnapshotSchema = z.object({
   acquisition: z
     .object({
       channels: z.array(AcquisitionChannelRowSchema),
+      /** Participação por canal agregado (ver ChannelShareRowSchema) — opcional, nem toda extração traz essa seção. */
+      channelShares: z.array(ChannelShareRowSchema).optional(),
     })
     .optional(),
   catalog: z

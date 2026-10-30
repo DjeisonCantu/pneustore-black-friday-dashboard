@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest'
-import { loadRealOverview } from '../real-overview'
+import { channelRevenueShare, loadRealOverview } from '../real-overview'
 
 describe('loadRealOverview', () => {
   test('o snapshot real embutido continua válido contra o contrato (nunca deve devolver null)', () => {
@@ -27,5 +27,29 @@ describe('loadRealOverview', () => {
     const result = loadRealOverview()
     expect(result?.channels.every((c) => !c.channel.startsWith('Origem'))).toBe(true)
     expect(result?.channels.every((c) => !c.sourceMedium?.startsWith('Origem'))).toBe(true)
+  })
+
+  test('expõe a participação por canal agregada do Looker (channelShares), batendo com o PDF', () => {
+    const result = loadRealOverview()
+    const cpc = result?.channelShares.find((c) => c.channel === 'CPC')
+    expect(cpc).toEqual({ channel: 'CPC', revenueSharePercent: 43.45, comparisonChangePercent: -11.2 })
+    expect(result?.channelShares).toHaveLength(6)
+  })
+})
+
+describe('channelRevenueShare', () => {
+  test('divide pela receita TOTAL do período, nunca pela soma das linhas exibidas', () => {
+    // google/cpc: receita 18.580.000, total do período 47.460.135,62 — ~39,1% (não ~44,95%,
+    // que seria o resultado errado de dividir pela soma só das linhas, ~41,3 mi).
+    const result = loadRealOverview()
+    const googleCpc = result?.channels.find((c) => c.sourceMedium === 'google / cpc')
+    expect(googleCpc).toBeDefined()
+    const share = channelRevenueShare(googleCpc!.revenue, result!.revenue)
+    expect(share).toBeCloseTo(39.14, 1)
+  })
+
+  test('devolve null quando o total do período é desconhecido — nunca divide por algo que não é o total', () => {
+    expect(channelRevenueShare(1000, null)).toBeNull()
+    expect(channelRevenueShare(1000, 0)).toBeNull()
   })
 })

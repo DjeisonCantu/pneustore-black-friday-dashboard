@@ -2,7 +2,7 @@
   "metadata": {
     "source": "ga4",
     "platform": "site",
-    "schemaVersion": "1.3.0",
+    "schemaVersion": "1.4.0",
     "extractedAt": "2026-10-30T12:17:54.727Z",
     "period": {
       "from": "2026-10-02",
@@ -25,7 +25,8 @@
       "Parte da receita por canal em acquisition.channels[] também é aproximada (mesmo motivo do card de resumo).",
       "catalog.brands[].itemsAdded é estimado a partir de %Add to Cart do Looker, não uma contagem bruta (ver 19-plano-integracao-via-looker-export.md).",
       "Separação site/app não comprovada estruturalmente (sem streamId) — depende de revisão manual de qual seção do PDF foi usada (ver 07-validacao-stream-ga4.md).",
-      "Taxa de conversão não incluída — fórmula oficial pendente de aprovação da Analytics (D-04)."
+      "Taxa de conversão não incluída — fórmula oficial pendente de aprovação da Analytics (D-04).",
+      "acquisition.channelShares[] vem da seção \"Participação por canal\" do PDF — já agregado pelo próprio Looker (um canal, uma linha); comparisonChangePercent é a variação vs. o período anterior que o Looker calcula, não recalculada aqui."
     ]
   },
   "records": [
@@ -94,6 +95,14 @@
         "sourceMedium": "(direct) / (none)",
         "revenue": 7150000
       }
+    ],
+    "channelShares": [
+      { "channel": "CPC", "revenueSharePercent": 43.45, "comparisonChangePercent": -11.2 },
+      { "channel": "Organic", "revenueSharePercent": 27.52, "comparisonChangePercent": 30.8 },
+      { "channel": "Direct", "revenueSharePercent": 15.07, "comparisonChangePercent": 7.5 },
+      { "channel": "Outros", "revenueSharePercent": 9.75, "comparisonChangePercent": -20.1 },
+      { "channel": "CRM", "revenueSharePercent": 3.82, "comparisonChangePercent": 15.0 },
+      { "channel": "Criteo", "revenueSharePercent": 0.39, "comparisonChangePercent": -15.4 }
     ]
   },
   "catalog": {

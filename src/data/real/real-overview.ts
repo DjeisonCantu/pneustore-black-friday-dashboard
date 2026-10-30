@@ -21,6 +21,12 @@ export interface RealChannelRow {
   revenue: number
 }
 
+export interface RealChannelShareRow {
+  channel: string
+  revenueSharePercent: number
+  comparisonChangePercent: number
+}
+
 export interface RealBrandRow {
   brand: string
   itemsViewed: number
@@ -37,9 +43,23 @@ export interface RealOverviewView {
   orders: number | null
   revenue: number | null
   channels: RealChannelRow[]
+  /** Participação por canal já agregada pelo Looker (um canal, uma linha) — ver ChannelShareRowSchema. */
+  channelShares: RealChannelShareRow[]
   brands: RealBrandRow[]
   limitations: string[]
   note?: string
+}
+
+/**
+ * % que uma linha de `channels` representa da receita TOTAL do período
+ * (`view.revenue`) — nunca da soma das linhas exibidas, que normalmente é
+ * menor que o total (ex.: quando a tabela mostra só o top N). Devolve `null`
+ * quando o total do período é desconhecido, em vez de dividir por algo que
+ * não é o total de verdade.
+ */
+export function channelRevenueShare(channelRevenue: number, periodTotalRevenue: number | null): number | null {
+  if (periodTotalRevenue === null || periodTotalRevenue <= 0) return null
+  return (channelRevenue / periodTotalRevenue) * 100
 }
 
 function metricTotal(metric: unknown): number | null {
@@ -65,6 +85,7 @@ export function loadRealOverview(): RealOverviewView | null {
     orders: record ? metricTotal(record.orders) : null,
     revenue: record ? metricTotal(record.revenue) : null,
     channels: snapshot.acquisition?.channels ?? [],
+    channelShares: snapshot.acquisition?.channelShares ?? [],
     brands: snapshot.catalog?.brands ?? [],
     limitations: snapshot.metadata.limitations ?? [],
     note: snapshot.metadata.note,

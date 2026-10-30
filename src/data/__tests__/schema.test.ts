@@ -294,6 +294,40 @@ describe('validateDailySnapshot — acquisition.channels sem sessões/pedidos (E
   })
 })
 
+describe('validateDailySnapshot — acquisition.channelShares (atualização de 30/10/2026)', () => {
+  it('aceita channelShares com percentuais e variação vs. período anterior', () => {
+    const payload = {
+      ...validPayload(),
+      acquisition: {
+        channels: [{ channel: 'CPC', revenue: 1000 }],
+        channelShares: [{ channel: 'CPC', revenueSharePercent: 43.45, comparisonChangePercent: -11.2 }],
+      },
+    }
+    const result = validateDailySnapshot(payload)
+    expect(result.success).toBe(true)
+    expect(result.data?.acquisition?.channelShares).toEqual([{ channel: 'CPC', revenueSharePercent: 43.45, comparisonChangePercent: -11.2 }])
+  })
+
+  it('channelShares é opcional — um snapshot sem essa seção continua válido', () => {
+    const payload = {
+      ...validPayload(),
+      acquisition: { channels: [{ channel: 'CPC', revenue: 1000 }] },
+    }
+    expect(validateDailySnapshot(payload).success).toBe(true)
+  })
+
+  it('rejeita revenueSharePercent fora de 0–100', () => {
+    const payload = {
+      ...validPayload(),
+      acquisition: {
+        channels: [{ channel: 'CPC', revenue: 1000 }],
+        channelShares: [{ channel: 'CPC', revenueSharePercent: 120, comparisonChangePercent: 0 }],
+      },
+    }
+    expect(validateDailySnapshot(payload).success).toBe(false)
+  })
+})
+
 describe('isCompatibleSchemaVersion', () => {
   it('aceita a própria versão suportada pela aplicação', () => {
     expect(isCompatibleSchemaVersion(SNAPSHOT_SCHEMA_VERSION)).toBe(true)

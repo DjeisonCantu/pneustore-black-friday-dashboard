@@ -21,14 +21,20 @@ import { ValidationState } from '@/components/common/state-views'
 import { ChannelBarChart, type ChannelBarDatum } from '@/components/charts/channel-bar-chart'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { useRegisterPageExport } from '@/hooks/use-register-export'
-import { loadRealOverview } from '@/data/real/real-overview'
+import { channelRevenueShare, loadRealOverview } from '@/data/real/real-overview'
 import { INDICATORS } from '@/data/indicators'
 import { formatCurrencyCompactBRL, formatDateShort, formatDateTime, formatInt, formatPercent } from '@/lib/format'
 
-function channelsWithShare(channels: { channel: string; sourceMedium?: string; revenue: number }[]): (ChannelBarDatum & { sourceMedium?: string })[] {
-  const total = channels.reduce((sum, c) => sum + c.revenue, 0)
+/**
+ * % da receita TOTAL do período (não da soma das linhas exibidas — essa soma
+ * costuma ser menor que o total real, ver channelRevenueShare).
+ */
+function channelsWithShare(
+  channels: { channel: string; sourceMedium?: string; revenue: number }[],
+  periodTotalRevenue: number | null,
+): (ChannelBarDatum & { sourceMedium?: string })[] {
   return [...channels]
-    .map((c) => ({ ...c, revenueShare: total > 0 ? (c.revenue / total) * 100 : 0 }))
+    .map((c) => ({ ...c, revenueShare: channelRevenueShare(c.revenue, periodTotalRevenue) ?? 0 }))
     .sort((a, b) => b.revenue - a.revenue)
 }
 
@@ -38,7 +44,7 @@ export function AcquisitionPage() {
 
   useRegisterPageExport('Aquisição e produtos', () => {
     if (!view) return '# Aquisição e produtos\n\nO snapshot real embutido não passou na validação — nada é exportado.'
-    const channels = channelsWithShare(view.channels)
+    const channels = channelsWithShare(view.channels, view.revenue)
     const lines = [
       '# Aquisição e produtos — dados REAIS (Looker Studio)',
       '',
@@ -88,7 +94,7 @@ export function AcquisitionPage() {
 
   const periodFrom = new Date(`${view.period.from}T00:00:00-03:00`)
   const periodTo = new Date(`${view.period.to}T00:00:00-03:00`)
-  const channels = channelsWithShare(view.channels)
+  const channels = channelsWithShare(view.channels, view.revenue)
   const visibleChannelRows = showAllChannels ? channels : channels.slice(0, 10)
 
   return (
