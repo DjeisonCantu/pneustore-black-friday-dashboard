@@ -30,6 +30,11 @@ export function AboutDataPage() {
       '',
       `_Gerado em ${formatDateTime(MOCK_TODAY)} a partir da maquete da Missão 02._`,
       '',
+      '## Fontes de dados reais (selo "REAL")',
+      '',
+      '- **GA4 / Looker Studio** — período 02/10/2026 a 29/10/2026, extraído manualmente de um PDF exportado do Looker Studio (looker-pdf-cli.mjs), status parcial: usuários e parte da receita por canal aproximados, taxa de conversão não incluída (D-04).',
+      '- **Microsoft Clarity** — período 27/10/2026 a 29/10/2026 (3 dias fechados), sinais de atrito das 6 páginas de checkout agregados para todos os dispositivos (sem divisão por dispositivo nesta extração). Não comparável ao GA4 (RA-07); sem cálculo de abandono (D-05).',
+      '',
       '## Glossário',
       '',
       ...GLOSSARY.map((g) => `- **${g.term}**: ${g.definition}`),
@@ -73,6 +78,38 @@ export function AboutDataPage() {
               ))}
             </TableBody>
           </Table>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Fontes de dados reais (selo verde &quot;REAL&quot;)</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3 pt-0 text-ds-base text-[var(--color-muted-foreground)]">
+          <p>
+            O restante do dashboard é uma maquete (dados fictícios, Missão 02). As duas fontes abaixo são exceção: aparecem com o selo{' '}
+            <Badge variant="success">REAL</Badge> no painel "GA4/Looker (real)" da Visão Geral e no painel "Sinais de atrito (Clarity)" da
+            Jornada de compra — nunca misturar os dois tipos de dado ao interpretar os números.
+          </p>
+          <div className="rounded-[var(--radius-control)] border border-[var(--color-border)] p-3.5">
+            <h3 className="text-ds-base font-semibold text-[var(--color-foreground)]">GA4 / Looker Studio</h3>
+            <p className="mt-1 text-ds-sm">
+              Período: 02/10/2026 a 29/10/2026 (rolante — ver limitações no painel). Extraído manualmente: exportação em PDF do Looker
+              Studio, processada por <code className="rounded bg-[var(--color-surface-muted)] px-1 py-0.5">04-validacao/scripts/looker-pdf-cli.mjs</code>.
+              Status: parcial (<code className="rounded bg-[var(--color-surface-muted)] px-1 py-0.5">status: &quot;partial&quot;</code>) —
+              não da GA4 Data API diretamente, usuários e parte da receita por canal aproximados, taxa de conversão não incluída (D-04).
+            </p>
+          </div>
+          <div className="rounded-[var(--radius-control)] border border-[var(--color-border)] p-3.5">
+            <h3 className="text-ds-base font-semibold text-[var(--color-foreground)]">Microsoft Clarity</h3>
+            <p className="mt-1 text-ds-sm">
+              Período: 27/10/2026 a 29/10/2026 (3 dias fechados — janela máxima da API pública de Data Export). Sinais de atrito (dead
+              clicks, rage clicks, quick backs) para as 6 páginas de checkout, agregados para todos os dispositivos (
+              <code className="rounded bg-[var(--color-surface-muted)] px-1 py-0.5">device: &quot;all&quot;</code>, sem divisão por
+              dispositivo nesta extração). Não comparável ao GA4 (RA-07); páginas são navegação, não eventos de e-commerce — sem cálculo de
+              abandono (D-05).
+            </p>
+          </div>
         </CardContent>
       </Card>
 

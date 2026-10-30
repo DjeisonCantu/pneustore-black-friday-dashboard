@@ -2,36 +2,36 @@
 //
 // Reaproveita o hook/store genéricos (useAsyncSnapshot) e o validador do
 // Clarity (contract.ts) — nenhuma infraestrutura nova de carregamento/cache
-// é criada aqui. Fora de desenvolvimento (import.meta.env.DEV === false)
-// nenhuma chamada é feita: não existe ainda uma fonte real ativada (ver
-// 04-validacao/13-plano-ativacao-clarity.md) e esta etapa proíbe
-// explicitamente qualquer chamada real à API do Clarity — o hook devolve o
-// estado inicial ('idle'), nunca tentando buscar nada.
+// é criada aqui.
+//
+// Atualização de 30/10/2026: fora de desenvolvimento (import.meta.env.DEV
+// === false) o hook agora carrega o snapshot REAL embutido
+// (src/data/real/clarity-real-snapshot.json, via realClarityFetcher) — mesmo
+// padrão já usado pelo GA4 (src/data/real/real-overview.ts). Antes disso
+// devolvia sempre 'idle' (nenhuma fonte real ativada ainda — ver
+// 04-validacao/13-plano-ativacao-clarity.md); essa restrição seguia válida
+// apenas enquanto não havia dado real para mostrar, nunca como regra
+// permanente.
 //
 // `import.meta.env.DEV` é uma constante de build (nunca muda durante a vida
 // da aplicação): o `if` abaixo sempre segue o mesmo ramo em todas as
 // renderizações de uma mesma build, por isso não viola a regra de hooks na
 // prática (ver nota em src/data/async-snapshot/use-async-snapshot.ts).
 
-import { createInitialLoadState } from '@/data/async-snapshot/types'
 import { useAsyncSnapshot, type UseAsyncSnapshotResult } from '@/data/async-snapshot/use-async-snapshot'
+import { REAL_CLARITY_SNAPSHOT_URL, realClarityFetcher } from '@/data/real/clarity-real-fetcher'
 import { claritySnapshotValidator, type ClaritySnapshot } from './contract'
 import { devClarityFetcher, devClaritySnapshotUrl, type DevClarityScenario } from './dev-fixtures'
 
-const STATIC_IDLE_RESULT: UseAsyncSnapshotResult<ClaritySnapshot> = {
-  ...createInitialLoadState<ClaritySnapshot>(),
-  reload: () => {},
-}
-
 /**
  * `scenario` escolhe qual fixture fictícia carregar — só tem efeito em
- * desenvolvimento ('ok' por padrão). Fora do DEV, devolve sempre o estado
- * inicial 'idle', sem nenhuma tentativa de carregamento.
+ * desenvolvimento ('ok' por padrão). Fora do DEV, ignora `scenario` e carrega
+ * sempre o snapshot real embutido.
  */
 export function useClarityJourneySignals(scenario: DevClarityScenario = 'ok'): UseAsyncSnapshotResult<ClaritySnapshot> {
   if (!import.meta.env.DEV) {
     // eslint-disable-next-line react-hooks/rules-of-hooks -- import.meta.env.DEV é fixo por build, nunca muda em runtime
-    return STATIC_IDLE_RESULT
+    return useAsyncSnapshot('clarity:real', REAL_CLARITY_SNAPSHOT_URL, claritySnapshotValidator, undefined, realClarityFetcher)
   }
 
   const key = `clarity:dev:${scenario}`

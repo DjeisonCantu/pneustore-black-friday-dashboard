@@ -34,8 +34,11 @@ export function JourneyPage() {
   // Sinais comportamentais do Clarity — camada assíncrona separada do
   // DataProvider síncrono dos indicadores comerciais acima (decisão
   // arquitetural da Etapa C3, ver 04-validacao/05-mapeamento-frontend.md,
-  // seção 11). Só carrega fixtures fictícias; nenhuma chamada real à API.
+  // seção 11). Em desenvolvimento carrega fixtures fictícias; em produção
+  // carrega o snapshot real embutido (atualização de 30/10/2026) — ver
+  // src/data/clarity/use-clarity-journey.ts.
   const clarity = useClarityJourneySignals()
+  const isRealClarityData = !import.meta.env.DEV
   const clarityView = useMemo(() => {
     if (!clarity.snapshot) return null
     return filterClarityJourneyViewByDevice(buildClarityJourneyView(clarity.snapshot), filters.device)
@@ -49,7 +52,7 @@ export function JourneyPage() {
     const header = buildExportHeader('Jornada de compra', filters)
     const clarityLine =
       clarity.status === 'success' || clarity.status === 'stale'
-        ? `_Sinais do Clarity: dados fictícios (ambiente de desenvolvimento), extração de ${clarityView?.period.from} a ${clarityView?.period.to}${clarity.status === 'stale' ? ' — desatualizados' : ''}._`
+        ? `_Sinais do Clarity: ${isRealClarityData ? 'dados REAIS' : 'dados fictícios (ambiente de desenvolvimento)'}, extração de ${clarityView?.period.from} a ${clarityView?.period.to}${clarity.status === 'stale' ? ' — desatualizados' : ''}._`
         : '_Sinais do Clarity: fonte ainda não configurada nesta instalação (ver 04-validacao/13-plano-ativacao-clarity.md)._'
     const lines = [
       header,
@@ -174,6 +177,7 @@ export function JourneyPage() {
         view={clarityView}
         errors={clarity.errors}
         periodCoverage={clarityPeriodCoverage}
+        isReal={isRealClarityData}
         onReload={clarity.reload}
       />
 

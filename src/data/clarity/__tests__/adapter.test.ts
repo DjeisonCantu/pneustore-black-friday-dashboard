@@ -140,3 +140,22 @@ describe('filterClarityJourneyViewByDevice (Etapa C3 — respeita o filtro globa
     expect(filteredAgain.topDeadClickPages).toEqual([])
   })
 })
+
+describe('filterClarityJourneyViewByDevice — linhas agregadas (device "all", atualização de 30/10/2026)', () => {
+  const aggregatedView = buildClarityJourneyView(
+    snapshot({}, [
+      { page: '/checkout/v2/cart', device: 'all', deadClicks: { absolute: 100 }, rageClicks: { absolute: 1 }, quickBacks: { absolute: 1 } },
+    ]),
+  )
+
+  it('uma linha agregada nunca é removida por um filtro de dispositivo específico', () => {
+    const filtered = filterClarityJourneyViewByDevice(aggregatedView, 'desktop')
+    expect(filtered.rows).toHaveLength(1)
+    expect(filtered.rows[0].device).toBe('all')
+  })
+
+  it('o ranking de páginas continua contando a linha agregada mesmo sob um filtro específico', () => {
+    const filtered = filterClarityJourneyViewByDevice(aggregatedView, 'mobile')
+    expect(filtered.topDeadClickPages).toEqual([{ pagePath: '/checkout/v2/cart', pageLabel: 'Carrinho', totalDeadClicks: 100 }])
+  })
+})

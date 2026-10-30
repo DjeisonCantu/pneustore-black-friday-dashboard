@@ -91,16 +91,19 @@ export function buildClarityJourneyView(snapshot: ClaritySnapshot): ClarityJourn
 
 /**
  * Filtra a visão pelo filtro global de dispositivo (RF da Etapa C3: "o
- * painel deverá respeitar o filtro global de dispositivo"). `'todos'` e
- * `'other'` (dispositivo do Clarity sem equivalente no filtro global) nunca
- * são removidos por um filtro específico — só `'todos'` devolve tudo; um
- * filtro de 'desktop'/'mobile'/'tablet' remove as linhas de outro
- * dispositivo, incluindo `'other'`. O ranking de páginas é recalculado a
- * partir das linhas já filtradas — nunca soma dispositivos fora do filtro.
+ * painel deverá respeitar o filtro global de dispositivo"). `'todos'` devolve
+ * tudo; um filtro de 'desktop'/'mobile'/'tablet' remove as linhas de outro
+ * dispositivo específico (incluindo `'other'`). Uma linha AGREGADA
+ * (`device: 'all'`, atualização de 30/10/2026 — ver contract.ts) nunca é
+ * removida por um filtro específico: ela já representa todos os
+ * dispositivos somados, então "filtrar por desktop" não tem como recortá-la
+ * sem inventar uma divisão que a fonte não forneceu — é mais honesto sempre
+ * mostrá-la do que escondê-la. O ranking de páginas é recalculado a partir
+ * das linhas já filtradas — nunca soma dispositivos fora do filtro.
  */
 export function filterClarityJourneyViewByDevice(view: ClarityJourneyView, device: DeviceFilter): ClarityJourneyView {
   if (device === 'todos') return view
 
-  const rows = view.rows.filter((row) => row.device === device)
+  const rows = view.rows.filter((row) => row.device === device || row.device === 'all')
   return { ...view, rows, topDeadClickPages: buildTopDeadClickPages(rows) }
 }

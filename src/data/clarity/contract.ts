@@ -17,16 +17,27 @@
 import { z } from 'zod'
 import type { SnapshotValidator } from '@/data/async-snapshot/types'
 
-export const CLARITY_SCHEMA_VERSION = '1.0.0'
+export const CLARITY_SCHEMA_VERSION = '1.1.0'
 
 /**
  * Dispositivo conforme o Clarity reporta (ver 02-auditoria-clarity.md e o
  * acesso real da Etapa C1 — a consulta real devolveu "PC", "Mobile",
  * "Tablet", "Other"). Mapeado para o vocabulário do app (`desktop` em vez de
  * `PC`) no adaptador, não aqui — este contrato reflete o que a fonte envia.
+ *
+ * `'all'` (desde 1.1.0, atualização de 30/10/2026) não é um dispositivo real
+ * reportado pelo Clarity — é um sentinela para uma linha AGREGADA (todos os
+ * dispositivos somados), usado quando a extração só tem o total e não uma
+ * divisão por dispositivo. Nunca usar `'all'` para inventar uma divisão;
+ * apenas para marcar honestamente "isto não está segmentado".
  */
-export const ClarityDeviceSchema = z.enum(['desktop', 'mobile', 'tablet', 'other'])
+export const ClarityDeviceSchema = z.enum(['desktop', 'mobile', 'tablet', 'other', 'all'])
 export type ClarityDevice = z.infer<typeof ClarityDeviceSchema>
+
+/** Um `ClarityPageSignal` cujo `device` é o sentinela agregado `'all'`. */
+export function isAggregatedDevice(device: ClarityDevice): device is 'all' {
+  return device === 'all'
+}
 
 /** Um valor absoluto, com a taxa por sessão opcionalmente informada pela própria fonte. */
 export const ClarityMetricSchema = z.object({

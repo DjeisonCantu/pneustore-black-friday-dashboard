@@ -1,7 +1,7 @@
 // Testes de integridade do contrato de snapshot do Clarity (Missão 04 — Etapa C2).
 
 import { describe, expect, it } from 'vitest'
-import { CLARITY_SCHEMA_VERSION, isCompatibleClaritySchemaVersion, validateClaritySnapshot } from '../contract'
+import { CLARITY_SCHEMA_VERSION, isAggregatedDevice, isCompatibleClaritySchemaVersion, validateClaritySnapshot } from '../contract'
 
 function validPayload() {
   return {
@@ -83,6 +83,24 @@ describe('validateClaritySnapshot — contrato', () => {
     expect(() => validateClaritySnapshot(null)).not.toThrow()
     expect(() => validateClaritySnapshot(42)).not.toThrow()
     expect(validateClaritySnapshot(undefined).success).toBe(false)
+  })
+
+  it('aceita device "all" — linha agregada, sem divisão por dispositivo (atualização de 30/10/2026)', () => {
+    const payload = validPayload()
+    payload.metadata.deviceScope = ['all']
+    payload.pages[0].device = 'all'
+    delete (payload.pages[0] as Record<string, unknown>).sessions
+    const result = validateClaritySnapshot(payload)
+    expect(result.success).toBe(true)
+    expect(result.data?.pages[0].device).toBe('all')
+  })
+})
+
+describe('isAggregatedDevice', () => {
+  it('identifica o sentinela "all" e só ele', () => {
+    expect(isAggregatedDevice('all')).toBe(true)
+    expect(isAggregatedDevice('desktop')).toBe(false)
+    expect(isAggregatedDevice('other')).toBe(false)
   })
 })
 

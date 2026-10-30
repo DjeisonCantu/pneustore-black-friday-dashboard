@@ -1,10 +1,17 @@
-# PneuStore — Black Friday Health Monitor (Missão 02 · Maquete visual)
+# PneuStore — Black Friday Health Monitor
 
-Aplicação frontend React + TypeScript que implementa a **primeira versão visual e navegável** do
-dashboard PneuStore Black Friday Health Monitor, conforme `01-planejamento/` e a Missão 02.
+Aplicação frontend React + TypeScript que implementa o dashboard PneuStore Black Friday Health
+Monitor, conforme `01-planejamento/` (Missão 02, maquete visual) e a Missão 04 (integração real
+parcial via extração manual).
 
-**Status desta entrega:** construção visual com dados demonstrativos. Nenhuma integração real
-(GA4, Clarity, SSO), nenhuma autenticação em produção e nenhum deploy foram realizados — ver
+**Status desta entrega (atualizado 30/10/2026):** a maquete visual (Missão 02) continua com dados
+fictícios para a maior parte das telas — nenhuma autenticação corporativa real (SSO) e nenhuma
+conexão automática com GA4/Clarity foram implementadas. Duas exceções, claramente marcadas com o
+selo verde "REAL" (nunca com a faixa "DADOS FICTÍCIOS"): um snapshot real do GA4/Looker Studio na
+Visão Geral e sinais reais do Clarity na Jornada de compra, os dois extraídos **manualmente**
+(sem automação de navegador nem API oficial — ver [Dados reais embutidos](#dados-reais-embutidos--fontes-e-períodos)).
+O dashboard está publicado no GitHub Pages (repositório público, plano gratuito) atrás de um login
+simples e deliberadamente não seguro (ver [Login](#login)) — ver
 [Pendências para a integração real](#pendências-para-a-integração-real).
 
 ## Como executar localmente
@@ -96,6 +103,36 @@ src/
   hooks/, state/, lib/      Hooks de filtro/exportação, contexto de cenário de demo, utilitários
 ```
 
+## Dados reais embutidos — fontes e períodos
+
+Além da maquete fictícia (seção abaixo), duas fontes **reais** ficam embutidas no bundle, validadas
+em tempo de execução contra o mesmo tipo de contrato Zod da maquete, e exibidas com o selo verde
+"REAL" (nunca com o rótulo "DADOS FICTÍCIOS" — ver `src/components/common/fictitious-banner.tsx`):
+
+| Fonte | Arquivo | Período | Como foi extraído | Limitações principais |
+|---|---|---|---|---|
+| GA4 / Looker Studio | `src/data/real/ga4-real-snapshot.json` (`src/data/real/real-overview.ts`) | 02/10/2026 a 29/10/2026 | Exportação manual em PDF do Looker Studio, processada por `04-validacao/scripts/looker-pdf-cli.mjs` | `status: "partial"`; usuários e parte da receita por canal aproximados; taxa de conversão não incluída (D-04); ver `metadata.limitations` no próprio arquivo |
+| Microsoft Clarity | `src/data/real/clarity-real-snapshot.json` (`src/data/clarity/use-clarity-journey.ts`, fora do DEV) | 27/10/2026 a 29/10/2026 (3 dias fechados) | `query-analytics-dashboard` (MCP do Clarity), agregado manualmente por `05-atualizacoes-diarias/` | Agregado para todos os dispositivos (`device: "all"`, sem segmentação); janela pública de 1–3 dias; não comparável ao GA4 (RA-07); sem cálculo de abandono (D-05) |
+
+Nenhuma das duas fontes é atualizada automaticamente — ver "Atualização de dados" abaixo.
+
+### Atualização de dados
+
+Não há job agendado, conexão de API nem automação de navegador (proibida explicitamente neste
+projeto). A atualização é manual: exportar o PDF do Looker Studio e os agregados do Clarity, rodar
+`looker-pdf-cli.mjs` sobre o PDF, revisar o rascunho gerado e substituir os dois arquivos JSON
+acima à mão (ver `04-validacao/19-plano-integracao-via-looker-export.md` e
+`04-validacao/13-plano-ativacao-clarity.md`).
+
+### Login
+
+Acesso ao site publicado é protegido por um login simples e **deliberadamente não seguro**
+(`src/state/auth-context.tsx`, `src/components/auth/login-gate.tsx`): credencial fixa no código-
+fonte público, sem servidor de autenticação, sem hashing, sem expiração de sessão além do
+`localStorage` do navegador. Serve apenas como um filtro casual — qualquer pessoa com acesso ao
+repositório público (plano gratuito do GitHub Pages) vê a credencial e, de qualquer forma, o site
+publicado é sempre alcançável publicamente por quem tiver o link, independentemente do login.
+
 ## Dados demonstrativos — isolamento e regras seguidas
 
 Toda a camada de dados fica em `src/data/mock/`, claramente separada do restante da aplicação, e
@@ -147,14 +184,14 @@ Lista consolidada a partir de `01-planejamento/05-requisitos-tecnicos.md` e
 
 | Pendência | Onde fica hoje nesta maquete |
 |---|---|
-| Conexão com a GA4 Data API (conta de serviço, projeto sem faturamento) | Todos os números vêm de `src/data/mock/` |
-| Conexão com a Data Export API do Clarity (D-12, Q-10) | "Sinais de atrito" mostra um espaço reservado com dados ilustrativos |
+| Conexão com a GA4 Data API (conta de serviço, projeto sem faturamento) | Sem acesso disponível (confirmado pelo responsável) — snapshot real extraído manualmente de PDF do Looker Studio, ver [Dados reais embutidos](#dados-reais-embutidos--fontes-e-períodos); indicadores por filtro (período/dispositivo personalizados) continuam vindo de `src/data/mock/` |
+| Conexão com a Data Export API do Clarity (D-12, Q-10) | Sinais de atrito reais embutidos (consulta manual via `query-analytics-dashboard`), agregados sem segmentação por dispositivo — ver [Dados reais embutidos](#dados-reais-embutidos--fontes-e-períodos) |
 | Autenticação corporativa via SSO (D-02, SEG-01) | Cabeçalho mostra uma "Conta corporativa (simulada)" sem login real — ver `src/components/layout/user-menu.tsx` |
 | Job de coleta/snapshots agendados (D-03, INT-04) | Dados gerados em memória no navegador a cada carregamento |
 | Fórmula oficial de conversão (D-04) e metodologia de jornada/abandono (D-05) | Fórmula "pedidos ÷ sessões" usada como exemplo; abandono não é calculado |
 | Confirmação dos eventos de e-commerce e de `item_category` no stream web (Q-04) | Ranking de categorias fica em "validação"; volumes de carrinho/checkout são ilustrativos |
 | Limite oficial de variação relevante (D-08) e tolerância de reconciliação (D-09) | Usa ±15% como exemplo, sinalizado como pendente de aprovação |
-| Hospedagem definitiva (D-01) | Executar apenas localmente (`npm run dev` / `npm run preview`) |
+| Hospedagem definitiva (D-01) | Publicado no GitHub Pages (repositório público, plano gratuito) via `.github/workflows/deploy.yml` — decisão provisória, não uma hospedagem corporativa definitiva |
 | Tratamento de tablet (D-06), janela da Black (D-10), frequência de atualização (D-11) | Tablet tratado como categoria própria; janela 24/11–01/12 usada como exemplo |
 
 ## Dependências e licenças
@@ -190,4 +227,4 @@ execução — todas operam inteiramente no navegador, sobre os dados fictícios
 - [x] Nenhum dado fictício apresentado como real (faixa fixa + rótulo nas exportações).
 - [x] Nenhuma chamada a API externa de analytics.
 - [x] Nenhuma dependência de serviço pago.
-- [x] Nenhum deploy realizado.
+- [x] Deploy realizado no GitHub Pages (atualização de 30/10/2026) — ver [Dados reais embutidos](#dados-reais-embutidos--fontes-e-períodos).

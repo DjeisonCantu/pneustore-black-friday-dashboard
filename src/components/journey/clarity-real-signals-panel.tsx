@@ -1,12 +1,15 @@
 // Painel de sinais de atrito do Clarity — Missão 04, Etapa C2 (criado,
-// desconectado) / Etapa C3 (conectado à Jornada de compra).
+// desconectado) / Etapa C3 (conectado à Jornada de compra) / atualização de
+// 30/10/2026 (produção passou a mostrar o snapshot REAL embutido, em vez de
+// 'idle' — ver src/data/clarity/use-clarity-journey.ts).
 //
 // Conectado por src/pages/journey-page.tsx via
-// src/data/clarity/use-clarity-journey.ts, que só carrega fixtures
-// fictícias (ambiente de desenvolvimento) — nenhuma chamada real à API do
-// Clarity é feita (ver 04-validacao/13-plano-ativacao-clarity.md). Os
-// indicadores comerciais (GA4) continuam vindo do DataProvider síncrono,
-// sem nenhuma mudança.
+// src/data/clarity/use-clarity-journey.ts: em desenvolvimento carrega
+// fixtures fictícias; fora do DEV (produção) carrega o snapshot real
+// embutido (src/data/real/clarity-real-snapshot.json). `isReal` diz qual dos
+// dois é — o selo "dados fictícios" NUNCA pode aparecer para o real, e o
+// rótulo do real nunca pode sugerir que é fictício. Os indicadores
+// comerciais (GA4) continuam vindo do DataProvider síncrono, sem mudança.
 //
 // Usa exatamente os mesmos componentes de UI que src/pages/journey-page.tsx
 // já usa (Card, Table, Badge, EmptyState) — nenhum componente novo de design
@@ -22,7 +25,13 @@ import { clarityCoverageMessage, type ClarityPeriodCoverage } from '@/data/clari
 import type { SnapshotLoadStatus } from '@/data/async-snapshot/types'
 import { formatDateTime } from '@/lib/format'
 
-const DEVICE_LABELS: Record<string, string> = { desktop: 'Desktop', mobile: 'Mobile', tablet: 'Tablet', other: 'Outro' }
+const DEVICE_LABELS: Record<string, string> = {
+  desktop: 'Desktop',
+  mobile: 'Mobile',
+  tablet: 'Tablet',
+  other: 'Outro',
+  all: 'Todos os dispositivos',
+}
 
 export interface ClarityRealSignalsPanelProps {
   status: SnapshotLoadStatus
@@ -30,6 +39,8 @@ export interface ClarityRealSignalsPanelProps {
   errors: string[] | null
   /** Cobertura do período selecionado pela janela realmente extraída (ver src/data/clarity/coverage.ts). */
   periodCoverage: ClarityPeriodCoverage
+  /** `true` para o snapshot real embutido (produção); `false` para as fixtures fictícias (desenvolvimento). */
+  isReal: boolean
   onReload?: () => void
 }
 
@@ -37,9 +48,10 @@ function formatPerSession(value: number | null): string {
   return value === null ? '—' : value.toFixed(2)
 }
 
-export function ClarityRealSignalsPanel({ status, view, errors, periodCoverage, onReload }: ClarityRealSignalsPanelProps) {
+export function ClarityRealSignalsPanel({ status, view, errors, periodCoverage, isReal, onReload }: ClarityRealSignalsPanelProps) {
   const coverageMessage = view ? clarityCoverageMessage(periodCoverage, view.period) : null
   const hideRowsForPeriod = periodCoverage === 'none'
+  const hasAggregatedRows = view?.rows.some((row) => row.device === 'all') ?? false
 
   return (
     <Card className="print-break-inside-avoid" data-testid="clarity-signals-panel">
@@ -83,8 +95,16 @@ export function ClarityRealSignalsPanel({ status, view, errors, periodCoverage, 
               </div>
             )}
 
-            {view.isPartial && (
-              <Badge variant="warning">Coleta parcial — {view.period.from} a {view.period.to}</Badge>
+            <div className="flex flex-wrap gap-1.5">
+              {isReal && <Badge variant="success">REAL</Badge>}
+              {view.isPartial && <Badge variant="warning">Coleta parcial — {view.period.from} a {view.period.to}</Badge>}
+            </div>
+
+            {hasAggregatedRows && (
+              <div className="rounded-[var(--radius-control)] border border-[var(--color-info)]/30 bg-[var(--color-info-soft)] px-4 py-2 text-ds-sm text-[var(--color-info)]">
+                Esta extração é agregada — "Todos os dispositivos" representa mobile + desktop + tablet + outros juntos. O filtro de
+                dispositivo não recorta estes números (ver limitações abaixo).
+              </div>
             )}
 
             {periodCoverage === 'partial' && coverageMessage && (
@@ -163,7 +183,7 @@ export function ClarityRealSignalsPanel({ status, view, errors, periodCoverage, 
             source="clarity"
             from={new Date(`${view.period.from}T00:00:00-03:00`)}
             to={new Date(`${view.period.to}T00:00:00-03:00`)}
-            note={`Dados fictícios (ambiente de desenvolvimento) · Projeto: ${view.project} · Extraído em ${formatDateTime(new Date(view.extractedAt))}`}
+            note={`${isReal ? 'Dados REAIS (extração manual do Clarity)' : 'Dados fictícios (ambiente de desenvolvimento)'} · Projeto: ${view.project} · Extraído em ${formatDateTime(new Date(view.extractedAt))}`}
           />
         ) : (
           <span>Fonte: Clarity — sem dados carregados nesta instalação.</span>
