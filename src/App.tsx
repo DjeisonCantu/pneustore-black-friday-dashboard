@@ -8,12 +8,8 @@ import { HashRouter, Route, Routes } from 'react-router-dom'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { AppShell } from '@/components/layout/app-shell'
 import { LoginGate } from '@/components/auth/login-gate'
-import { OverviewPage } from '@/pages/overview-page'
-import { JourneyPage } from '@/pages/journey-page'
-import { AcquisitionPage } from '@/pages/acquisition-page'
-import { AboutDataPage } from '@/pages/about-data-page'
+import { DashboardPage } from '@/pages/dashboard-page'
 import { AuthProvider } from '@/state/auth-context'
-import { DemoScenarioProvider } from '@/state/demo-scenario-context'
 import { ExportProvider } from '@/state/export-context'
 import { ThemeProvider } from '@/state/theme-context'
 
@@ -23,20 +19,15 @@ export default function App() {
       <AuthProvider>
         <LoginGate>
           <TooltipProvider delayDuration={200}>
-            <DemoScenarioProvider>
-              <ExportProvider>
-                <HashRouter>
-                  <Routes>
-                    <Route element={<AppShell />}>
-                      <Route index element={<OverviewPage />} />
-                      <Route path="jornada" element={<JourneyPage />} />
-                      <Route path="aquisicao" element={<AcquisitionPage />} />
-                      <Route path="sobre" element={<AboutDataPage />} />
-                    </Route>
-                  </Routes>
-                </HashRouter>
-              </ExportProvider>
-            </DemoScenarioProvider>
+            <ExportProvider>
+              <HashRouter>
+                <Routes>
+                  <Route element={<AppShell />}>
+                    <Route index element={<DashboardPage />} />
+                  </Route>
+                </Routes>
+              </HashRouter>
+            </ExportProvider>
           </TooltipProvider>
         </LoginGate>
       </AuthProvider>

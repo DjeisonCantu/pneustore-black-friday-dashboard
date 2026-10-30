@@ -4,16 +4,19 @@ Aplicação frontend React + TypeScript que implementa o dashboard PneuStore Bla
 Monitor, conforme `01-planejamento/` (Missão 02, maquete visual) e a Missão 04 (integração real
 parcial via extração manual).
 
-**Status desta entrega (atualizado 30/10/2026):** o dashboard não mostra mais nenhum dado
-fictício — todo número vem do GA4 ou do Microsoft Clarity (nunca uma terceira fonte), extraídos
+**Status desta entrega (atualizado 30/10/2026):** o dashboard virou uma **página única** (layout
+one-page — ver [Layout one-page](#layout-one-page)), pensada para responder em poucos segundos "como
+está a venda, onde o checkout trava, de onde vem a receita e o que vende". Nenhum dado fictício —
+todo número vem do GA4 ou do Microsoft Clarity (nunca uma terceira fonte), extraídos
 **manualmente** (sem automação de navegador nem API oficial — ver
-[Dados reais embutidos](#dados-reais-embutidos--fontes-e-períodos)). A fonte principal da Visão
-geral e da Jornada de compra é o "Resumo Executivo Pré-Black" — o relatório de UX Research enviado
-ao CX que motivou a criação deste dashboard; "Aquisição e produtos" usa um snapshot mais amplo do
-Looker Studio só para canal/marca. Nenhuma autenticação corporativa real (SSO) e nenhuma conexão
-automática com GA4/Clarity foram implementadas. O dashboard está publicado no GitHub Pages
-(repositório público, plano gratuito) atrás de um login simples e deliberadamente não seguro (ver
-[Login](#login)) — ver [Pendências para a integração real](#pendências-para-a-integração-real).
+[Dados reais embutidos](#dados-reais-embutidos--fontes-e-períodos)). A fonte principal é o "Resumo
+Executivo Pré-Black" — o relatório de UX Research enviado ao CX que motivou a criação deste
+dashboard; o bloco "De onde vem a receita" e "O que vende" usam um snapshot mais amplo do Looker
+Studio. "Sobre os dados" não é mais uma tela própria — é uma gaveta (Sheet) aberta pelo rodapé.
+Nenhuma autenticação corporativa real (SSO) e nenhuma conexão automática com GA4/Clarity foram
+implementadas. O dashboard está publicado no GitHub Pages (repositório público, plano gratuito)
+atrás de um login simples e deliberadamente não seguro (ver [Login](#login)) — ver
+[Pendências para a integração real](#pendências-para-a-integração-real).
 
 ## Como executar localmente
 
@@ -77,13 +80,34 @@ pilha de fontes do sistema.
 ## O que esta missão entrega
 
 1. **Aplicação executável localmente** — `03-desenvolvimento/dashboard/` (este diretório).
-2. **Três áreas + "Sobre os dados"**, navegáveis por barra lateral (desktop) ou abas (mobile):
-   Visão geral, Jornada de compra, Aquisição e produtos, Sobre os dados.
+2. **Uma página só** (`src/pages/dashboard-page.tsx`), com "Sobre os dados" como gaveta (Sheet) —
+   ver [Layout one-page](#layout-one-page).
 3. **Componentes reutilizáveis** em `src/components/` (layout, gráficos, estados, UI base).
-4. **Camada de dados demonstrativos isolada** em `src/data/mock/` — ver seção dedicada abaixo.
+4. **Camada de dados demonstrativos isolada** em `src/data/mock/`, sem uso pela UI desde 30/10/2026
+   — ver seção dedicada abaixo.
 5. **Exportação PDF** (folha de estilo de impressão do navegador, `window.print()`) e
    **Markdown** (gerado no navegador a partir dos dados já carregados, sem serviço externo).
 6. Este README, com instruções de execução, dependências/licenças e pendências.
+
+## Layout one-page
+
+A página (`src/pages/dashboard-page.tsx`) é montada em blocos, de cima para baixo:
+
+| Bloco | Componente | Conteúdo |
+|---|---|---|
+| A. Barra de status | `components/dashboard/status-bar.tsx` | Selo de período/fonte por bloco + até 2 alertas derivados automaticamente dos dados (`data/real/dashboard-alerts.ts`) |
+| B. KPIs | `components/dashboard/kpi-grid.tsx` | Sessões, conversão, receita, ticket médio (semana atual vs. mesma semana de 2025) |
+| C. Onde o checkout trava | `components/dashboard/checkout-friction-block.tsx` | Dead clicks por página (com a etapa crítica em vermelho), rage clicks/quick backs, comparação mobile × desktop 2025 vs 2026 |
+| D. De onde vem a receita | `components/dashboard/revenue-by-channel-block.tsx` | Participação por canal (Looker), com a variação colorida |
+| E. O que vende | `components/dashboard/top-sellers-block.tsx` | Receita por marca + mini-funil vistos → adicionados* → comprados |
+| F. Próximas ações | `components/dashboard/priorities-checklist.tsx` | As prioridades do Resumo Executivo Pré-Black |
+| G. Rodapé + "Sobre os dados" | `components/dashboard/about-data-sheet.tsx` | Fontes/períodos numa linha; a gaveta tem glossário, indicadores e limitações completas |
+
+Avisos, limitações e termos técnicos não aparecem no corpo dos cards — ficam num ícone (i) com
+tooltip (`components/common/note-tooltip.tsx`) ou na gaveta "Sobre os dados". Os filtros globais de
+período/dispositivo/comparação (`hooks/use-filters.ts`, `components/layout/filter-bar.tsx`)
+continuam no código mas não aparecem no cabeçalho — nenhuma fonte real atual é filtrável por eles
+(todas são de período fixo).
 
 ## Estrutura do projeto
 
@@ -91,37 +115,41 @@ pilha de fontes do sistema.
 src/
   types/common.ts          Tipos centrais (filtros, unidades, indicadores)
   data/
-    mock/                  Geradores de dados FICTÍCIOS (ver seção "Dados demonstrativos")
-    selectors.ts            Resolve período/comparação e agrega os dados fictícios por filtro
-    view-models/            Monta o modelo de cada tela a partir dos seletores
+    real/                   Dados REAIS (ver "Dados reais embutidos")
+    mock/                   Geradores de dados fictícios — sem uso pela UI desde 30/10/2026
+    selectors.ts            Resolve período/comparação (ainda usado por hooks/use-filters.ts)
     indicators.ts           Metadados REAIS dos indicadores (definição/unidade/fonte/limitação)
   components/
     ui/                     Primitivos no padrão shadcn/ui (Radix UI + Tailwind, código próprio)
-    layout/                 Cabeçalho global, navegação, filtros, exportação
-    common/                 KPI card, tooltip de definição, badges de estado/variação
-    charts/                 Wrappers de Recharts (série temporal, barras, ranking)
-  pages/                    As 4 telas do produto
-  hooks/, state/, lib/      Hooks de filtro/exportação, contexto de cenário de demo, utilitários
+    dashboard/              Os blocos do layout one-page (ver "Layout one-page")
+    layout/                 Cabeçalho global, exportação
+    common/                 Tooltip de definição/nota livre, estados de card
+    charts/                 Wrappers de Recharts (barras simples, barras agrupadas, série temporal)
+  pages/                    dashboard-page.tsx — a única tela do produto
+  hooks/, state/, lib/      Hooks de filtro/exportação, utilitários
 ```
 
 ## Dados reais embutidos — fontes e períodos
 
-Desde 30/10/2026 o dashboard não mostra mais nenhum dado fictício. Duas fontes **reais** ficam
-embutidas no bundle, ambas exibidas com o selo verde "REAL":
+Nenhum dado fictício em lugar nenhum. Três fontes **reais** ficam embutidas no bundle:
 
-| Fonte | Usada em | Arquivo | Período | Como foi extraído |
+| Fonte | Usada em (bloco) | Arquivo | Período | Como foi extraído |
 |---|---|---|---|---|
-| Resumo Executivo Pré-Black (PDF, UX Research) | Visão geral, Jornada de compra | `src/data/real/pre-black-executive-report.ts` | 14/10 a 20/10/2026, comparado com 14/10 a 20/10/2025 | Transcrição manual do relatório `PneuStore_Resumo_Executivo_PreBlack_2026.pdf` — o próprio relatório que motivou este dashboard. GA4 (sessões, conversão, receita estimada) e Clarity (passagem entre etapas, dead clicks, comparação anual) |
-| GA4 / Looker Studio | Aquisição e produtos (canal/marca) | `src/data/real/ga4-real-snapshot.json` (`src/data/real/real-overview.ts`) | 02/10/2026 a 29/10/2026 | Exportação manual em PDF do Looker Studio, processada por `04-validacao/scripts/looker-pdf-cli.mjs` |
+| Resumo Executivo Pré-Black (PDF, UX Research) | B (KPIs), parte de C (mobile × desktop 2025 vs 2026), F (prioridades) | `src/data/real/pre-black-executive-report.ts` | 14/10 a 20/10/2026, comparado com 14/10 a 20/10/2025 | Transcrição manual do relatório `PneuStore_Resumo_Executivo_PreBlack_2026.pdf` — o próprio relatório que motivou este dashboard. GA4 (sessões, conversão, receita estimada) e Clarity (passagem entre etapas, dead clicks, comparação anual) |
+| Microsoft Clarity — atrito do checkout | C (dead/rage clicks e quick backs por página) | `src/data/real/clarity-checkout-friction.ts` | 27/10 a 29/10/2026 (3 dias fechados) | Consulta real via `query-analytics-dashboard` (MCP do Clarity), agregada manualmente em `05-atualizacoes-diarias/2026-10-30/clarity-2026-10-27_a_29.json` |
+| GA4 / Looker Studio | D (participação por canal), E (receita e funil por marca) | `src/data/real/ga4-real-snapshot.json` (`src/data/real/real-overview.ts`) | 02/10/2026 a 29/10/2026 | Exportação manual em PDF do Looker Studio, processada por `04-validacao/scripts/looker-pdf-cli.mjs` |
 
-O "Resumo Executivo Pré-Black" é um módulo estático simples (sem contrato Zod nem pipeline
-assíncrono) — é um relatório fechado de uma semana específica, não um snapshot revalidado a cada
-atualização diária. Ver limitações de cada métrica diretamente nos painéis ou em "Sobre os dados".
+`pre-black-executive-report.ts` e `clarity-checkout-friction.ts` são módulos estáticos simples
+(sem contrato Zod nem pipeline assíncrono) — são relatórios fechados de um período específico, não
+snapshots revalidados a cada atualização diária. `ga4-real-snapshot.json` continua validado em
+runtime (Zod, `src/data/providers/schema.ts`) por ser o único embutido como JSON solto. Ver
+limitações de cada métrica nos ícones (i) dos cards ou na gaveta "Sobre os dados".
 
-Nenhuma das duas fontes é atualizada automaticamente — a atualização é manual (sem job agendado,
-conexão de API nem automação de navegador, proibida explicitamente neste projeto): um novo PDF do
-relatório executivo exige editar `pre-black-executive-report.ts` à mão; um novo export do Looker
-Studio passa por `looker-pdf-cli.mjs` (ver `04-validacao/19-plano-integracao-via-looker-export.md`).
+Nenhuma das três fontes é atualizada automaticamente — a atualização é manual (sem job agendado,
+conexão de API nem automação de navegador, proibida explicitamente neste projeto): um novo relatório
+executivo ou uma nova consulta ao Clarity exigem editar o respectivo arquivo `.ts` à mão; um novo
+export do Looker Studio passa por `looker-pdf-cli.mjs` (ver
+`04-validacao/19-plano-integracao-via-looker-export.md`).
 
 ### Login
 
@@ -151,18 +179,17 @@ removida por completo numa limpeza futura, se a equipe decidir que não vale a p
 
 ## Funcionalidades implementadas
 
-- Navegação entre as 4 áreas (Visão geral, Jornada de compra, Aquisição e produtos, Sobre os
-  dados). A barra de filtros (período/dispositivo) do cabeçalho ainda existe na interface, mas não
-  afeta nenhuma das fontes reais atuais — todas são de período fixo (ver tabela acima). Candidata a
-  simplificação futura.
-- Tabelas com top 10 + "ver todos" (canais) em Aquisição e produtos.
-- Estados de componente: sem dados, fonte indisponível e em validação —
-  veja o seletor "Cenário" no cabeçalho (exclusivo desta maquete) para alternar entre eles sem
-  esperar um cenário real acontecer.
-- Exportação PDF (impressão) e Markdown (download local), ambas com filtros, período, fontes,
-  data de extração e notas de limitação, para todas as 4 telas.
-- Layout responsivo: barra lateral fixa + grade de 12 colunas no desktop; abas no topo + cartões
-  em 2 colunas no mobile (testado a partir de 375 px).
+- Página única (ver [Layout one-page](#layout-one-page)), sem navegação entre telas — "Sobre os
+  dados" abre como gaveta a partir do rodapé.
+- Alertas automáticos (ex.: "Carrinho: atrito alto") derivados de limiares simples sobre os dados
+  reais (`src/data/real/dashboard-alerts.ts`), nunca escritos à mão.
+- Cor nunca é o único indicador: toda variação/criticidade também aparece como texto (+/-, "crítico",
+  "acima de 40%") — testado em `src/pages/__tests__/dashboard-page.test.tsx`.
+- Exportação PDF (impressão) e Markdown (download local), cobrindo todos os blocos da página.
+- Layout responsivo: grade de 12 colunas no desktop (blocos C e D lado a lado); uma coluna no
+  mobile, sem scroll horizontal (testado a partir de 375 px).
+- A barra de filtros (período/dispositivo) e a camada de mock continuam no código, mas escondidas/
+  sem uso — nenhuma fonte real atual é filtrável por elas (todas são de período fixo).
 
 ## O que depende de integração real (não implementado nesta missão)
 
@@ -172,7 +199,7 @@ Lista consolidada a partir de `01-planejamento/05-requisitos-tecnicos.md` e
 | Pendência | Onde fica hoje nesta maquete |
 |---|---|
 | Conexão com a GA4 Data API (conta de serviço, projeto sem faturamento) | Sem acesso disponível (confirmado pelo responsável) — números transcritos manualmente do Resumo Executivo Pré-Black e de um PDF do Looker Studio, ver [Dados reais embutidos](#dados-reais-embutidos--fontes-e-períodos) |
-| Conexão com a Data Export API do Clarity (D-12, Q-10) | Sinais de atrito reais, transcritos manualmente do Resumo Executivo Pré-Black (passagem entre etapas e dead clicks, por dispositivo) — ver [Dados reais embutidos](#dados-reais-embutidos--fontes-e-períodos) |
+| Conexão com a Data Export API do Clarity (D-12, Q-10) | Sinais de atrito reais: passagem entre etapas e dead clicks por dispositivo (transcritos do Resumo Executivo Pré-Black) + dead/rage clicks e quick backs por página de checkout (consulta real via query-analytics-dashboard) — ver [Dados reais embutidos](#dados-reais-embutidos--fontes-e-períodos) |
 | Autenticação corporativa via SSO (D-02, SEG-01) | Login simples e não seguro — ver [Login](#login) |
 | Job de coleta/snapshots agendados (D-03, INT-04) | Atualização manual (editar os arquivos reais à mão a cada novo relatório/export) |
 | Fórmula oficial de conversão (D-04) | GA4_WEEKLY mostra a conversão do relatório (pedidos ÷ sessões, calculada pelo próprio GA4) — ainda não é uma fórmula oficial aprovada para o dashboard em geral |
@@ -204,11 +231,11 @@ nuvem (CUS-02, CUS-03, CUS-04).
 | vitest | 5.0.5 | MIT | Testes automatizados da camada de dados (dependência de desenvolvimento, não entra no bundle) |
 
 Nenhuma dependência faz chamada de rede para analytics ou serviços de terceiros em tempo de
-execução — todas operam inteiramente no navegador, sobre os dados fictícios locais.
+execução — todas operam inteiramente no navegador, sobre os dados reais embutidos localmente.
 
 ## Critérios de aceite — status nesta missão
 
-- [x] Interface navegável em desktop e mobile.
+- [x] Página única, responsiva em desktop e mobile (sem navegação entre telas).
 - [x] Nenhum indicador sem unidade e fonte (ícone ⓘ em cada indicador + rodapé de fonte/período).
 - [x] Nenhum dado fictício em lugar nenhum do dashboard (atualização de 30/10/2026) — todo número
       vem do GA4 ou do Clarity, nunca de `src/data/mock/`.

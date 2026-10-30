@@ -1,21 +1,20 @@
-import { SlidersHorizontal } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Sheet, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
-import { FilterBar } from '@/components/layout/filter-bar'
-import { LastUpdateStrip } from '@/components/layout/last-update-strip'
+// Atualização de 30/10/2026 (layout one-page): FilterBar e a linha
+// "Comparando X vs Y" saíram daqui — os filtros de período/dispositivo não
+// afetam nenhuma fonte real atual (todas são de período fixo), então
+// mostrá-los seria exibir um controle sem efeito (Parte 3 do pedido:
+// "esconda-os enquanto não houver dado real filtrável"). O código de
+// filtro/FilterBar continua no projeto (src/hooks/use-filters.ts,
+// src/components/layout/filter-bar.tsx), só não é mais renderizado aqui. O
+// resumo de "última atualização" também saiu — virou a barra de status no
+// topo da própria página (src/components/dashboard/status-bar.tsx), com
+// período e fonte por bloco, mais específico que a linha única anterior.
+
 import { ExportMenu } from '@/components/layout/export-menu'
 import { ThemeToggle } from '@/components/layout/theme-toggle'
 import { UserMenu } from '@/components/layout/user-menu'
-import { useFilters } from '@/hooks/use-filters'
-import { comparisonLabel, resolveComparisonRange, resolvePeriodRange } from '@/data/selectors'
-import { formatDateRangeLabel } from '@/lib/format'
 import pneustoreIcon from '@/assets/brand/pneustore-icon-white.png'
 
 export function GlobalHeader() {
-  const [filters] = useFilters()
-  const period = resolvePeriodRange(filters)
-  const comparisonRange = resolveComparisonRange(filters)
-
   return (
     <header className="material-chrome no-print sticky top-0 z-30 border-b border-[var(--color-border)]">
       <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-3 lg:px-6">
@@ -29,41 +28,11 @@ export function GlobalHeader() {
           </div>
         </div>
 
-        <div className="hidden lg:block">
-          <FilterBar />
-        </div>
-
-        <Sheet>
-          <SheetTrigger asChild>
-            <Button variant="outline" size="sm" className="lg:hidden">
-              <SlidersHorizontal className="h-3.5 w-3.5" />
-              Filtros
-            </Button>
-          </SheetTrigger>
-          <SheetContent>
-            <SheetTitle>Filtros</SheetTitle>
-            <div className="mt-4">
-              <FilterBar layout="stacked" />
-            </div>
-          </SheetContent>
-        </Sheet>
-
         <div className="flex items-center gap-2">
           <ThemeToggle />
           <ExportMenu />
           <UserMenu />
         </div>
-      </div>
-
-      <div className="flex flex-wrap items-center justify-between gap-2 border-t border-[var(--color-border)] px-4 py-1.5 lg:px-6">
-        <LastUpdateStrip />
-        {filters.comparison !== 'nenhum' && comparisonRange && (
-          <p className="text-ds-sm text-[var(--color-muted-foreground)]">
-            Comparando <span className="font-medium text-[var(--color-foreground)]">{formatDateRangeLabel(period.from, period.to)}</span> vs{' '}
-            <span className="font-medium text-[var(--color-foreground)]">{formatDateRangeLabel(comparisonRange.from, comparisonRange.to)}</span>{' '}
-            ({comparisonLabel(filters.comparison)})
-          </p>
-        )}
       </div>
     </header>
   )
