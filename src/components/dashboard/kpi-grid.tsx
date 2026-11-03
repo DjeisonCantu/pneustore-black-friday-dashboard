@@ -3,7 +3,9 @@
 
 import { TrendingDown, TrendingUp } from 'lucide-react'
 import { NoteTooltip } from '@/components/common/note-tooltip'
-import { GA4_WEEKLY, percentDelta, type YearPair } from '@/data/real/pre-black-executive-report'
+import { percentDelta, type YearPair } from '@/data/dashboard-data'
+import { formatPeriodLong } from '@/data/updates/dates'
+import { useRealData } from '@/hooks/use-real-data'
 import { formatCurrencyBRL, formatCurrencyCompactBRL, formatInt, formatPercent } from '@/lib/format'
 
 function DeltaBadge({ pair, higherIsBetter = true }: { pair: YearPair; higherIsBetter?: boolean }) {
@@ -56,25 +58,25 @@ function KpiCard({
 }
 
 export function KpiGrid() {
+  const { weekly } = useRealData().ux
+  if (!weekly) return null
+
   return (
     <div
       className="grid grid-cols-2 gap-3 lg:grid-cols-4"
       role="group"
-      aria-label="Indicadores da semana de 14 a 20/10/2026, comparados com o mesmo período de 2025"
+      aria-label={`Indicadores da semana de ${formatPeriodLong(weekly.period.from, weekly.period.to)}, comparados com o mesmo período de 2025`}
     >
-      <KpiCard label="Sessões" value={formatInt(GA4_WEEKLY.sessions.y2026)} pair={GA4_WEEKLY.sessions} />
-      <KpiCard label="Conversão" value={formatPercent(GA4_WEEKLY.conversionRatePercent.y2026)} pair={GA4_WEEKLY.conversionRatePercent} />
-      <KpiCard
-        label="Receita"
-        approx
-        value={formatCurrencyCompactBRL(GA4_WEEKLY.revenueEstimatedBRL.y2026)}
-        pair={GA4_WEEKLY.revenueEstimatedBRL}
-      />
-      <KpiCard
-        label="Ticket médio"
-        value={formatCurrencyBRL(GA4_WEEKLY.averageTicketBRL.y2026)}
-        pair={GA4_WEEKLY.averageTicketBRL}
-      />
+      {weekly.sessions && <KpiCard label="Sessões" value={formatInt(weekly.sessions.y2026)} pair={weekly.sessions} />}
+      {weekly.conversionRatePercent && (
+        <KpiCard label="Conversão" value={formatPercent(weekly.conversionRatePercent.y2026)} pair={weekly.conversionRatePercent} />
+      )}
+      {weekly.revenueEstimatedBRL && (
+        <KpiCard label="Receita" approx value={formatCurrencyCompactBRL(weekly.revenueEstimatedBRL.y2026)} pair={weekly.revenueEstimatedBRL} />
+      )}
+      {weekly.averageTicketBRL && (
+        <KpiCard label="Ticket médio" value={formatCurrencyBRL(weekly.averageTicketBRL.y2026)} pair={weekly.averageTicketBRL} />
+      )}
     </div>
   )
 }

@@ -4,9 +4,12 @@
 
 import { CircleDashed } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { PRE_BLACK_PRIORITIES } from '@/data/real/pre-black-executive-report'
+import { useRealData } from '@/hooks/use-real-data'
 
 export function PrioritiesChecklist() {
+  const { priorities } = useRealData().ux
+  if (!priorities || priorities.items.length === 0) return null
+
   return (
     <Card className="print-break-inside-avoid">
       <CardHeader>
@@ -14,7 +17,7 @@ export function PrioritiesChecklist() {
       </CardHeader>
       <CardContent>
         <ul className="space-y-2">
-          {PRE_BLACK_PRIORITIES.map((item) => (
+          {priorities.items.map((item) => (
             <li key={item.title} className="flex items-start gap-2 text-ds-sm">
               <CircleDashed className="mt-0.5 h-4 w-4 shrink-0 text-[var(--color-muted-foreground)]" aria-hidden="true" />
               <span>

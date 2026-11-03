@@ -5,10 +5,10 @@ import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { NoteTooltip } from '@/components/common/note-tooltip'
 import { DeadClickBarChart } from '@/components/charts/dead-click-bar-chart'
-import { loadRealOverview } from '@/data/real/real-overview'
+import { useRealData } from '@/hooks/use-real-data'
 import { formatCurrencyCompactBRL, formatInt, formatPeriodCompact } from '@/lib/format'
 
-function BrandFunnelRow({ brand, itemsViewed, itemsAdded, itemsPurchased }: { brand: string; itemsViewed: number; itemsAdded: number; itemsPurchased: number }) {
+function BrandFunnelRow({ brand, itemsViewed, itemsAdded, itemsPurchased }: { brand: string; itemsViewed: number; itemsAdded: number | null; itemsPurchased: number }) {
   const max = itemsViewed || 1
   return (
     <div className="flex items-center gap-2.5 text-ds-sm">
@@ -18,33 +18,33 @@ function BrandFunnelRow({ brand, itemsViewed, itemsAdded, itemsPurchased }: { br
           <div className="h-full rounded-full bg-[var(--color-primary)]" style={{ width: '100%' }} />
         </div>
         <div className="h-1.5 w-full overflow-hidden rounded-full bg-[var(--color-surface-muted)]">
-          <div className="h-full rounded-full bg-[var(--color-primary)]/70" style={{ width: `${(itemsAdded / max) * 100}%` }} />
+          <div className="h-full rounded-full bg-[var(--color-primary)]/70" style={{ width: `${((itemsAdded ?? 0) / max) * 100}%` }} />
         </div>
         <div className="h-1.5 w-full overflow-hidden rounded-full bg-[var(--color-surface-muted)]">
           <div className="h-full rounded-full bg-[var(--color-primary)]/40" style={{ width: `${(itemsPurchased / max) * 100}%` }} />
         </div>
       </div>
       <span className="w-32 shrink-0 text-right tabular-nums text-[var(--color-muted-foreground)]">
-        {formatInt(itemsViewed)} / {formatInt(itemsAdded)} / {formatInt(itemsPurchased)}
+        {formatInt(itemsViewed)} / {itemsAdded === null ? '—' : formatInt(itemsAdded)} / {formatInt(itemsPurchased)}
       </span>
     </div>
   )
 }
 
 export function TopSellersBlock() {
-  const view = loadRealOverview()
-  if (!view || view.brands.length === 0) return null
+  const { overview } = useRealData()
+  if (!overview || overview.brands.length === 0) return null
 
-  const brands = [...view.brands].sort((a, b) => b.itemRevenue - a.itemRevenue)
+  const brands = [...overview.brands].sort((a, b) => b.itemRevenue - a.itemRevenue)
   const revenueData = brands.map((b) => ({ label: b.brand, value: b.itemRevenue }))
 
   return (
     <Card className="print-break-inside-avoid">
       <CardHeader className="flex-row items-center gap-2 space-y-0">
         <CardTitle>O que vende</CardTitle>
-        {view.catalogPeriod && (
-          <Badge variant="neutral" aria-label={`Período das marcas: ${formatPeriodCompact(view.catalogPeriod.from, view.catalogPeriod.to)}`}>
-            {formatPeriodCompact(view.catalogPeriod.from, view.catalogPeriod.to)}
+        {overview.catalogPeriod && (
+          <Badge variant="neutral" aria-label={`Período das marcas: ${formatPeriodCompact(overview.catalogPeriod.from, overview.catalogPeriod.to)}`}>
+            {formatPeriodCompact(overview.catalogPeriod.from, overview.catalogPeriod.to)}
           </Badge>
         )}
         <NoteTooltip label="Sobre itens adicionados" notes='"Adicionados" é estimado a partir de %Add to Cart do Looker — não é uma contagem bruta.' />

@@ -1,6 +1,7 @@
 import path from 'node:path'
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vitest/config'
+import { updatesPlugin } from './vite-plugin-updates.ts'
 
 // Config separada do vite.config.ts (que carrega o plugin do Tailwind,
 // desnecessário para os testes). O plugin do React é necessário aqui porque,
@@ -9,7 +10,8 @@ import { defineConfig } from 'vitest/config'
 // ambiente é `jsdom` para todo o projeto (os testes de camada de dados
 // `*.test.ts`, puros, continuam passando normalmente nele).
 export default defineConfig({
-  plugins: [react()],
+  // O mesmo plugin do app: os testes leem data/updates/ de verdade (módulo virtual).
+  plugins: [react(), updatesPlugin({ dir: path.resolve(import.meta.dirname, './data/updates') })],
   resolve: {
     alias: {
       '@': path.resolve(import.meta.dirname, './src'),

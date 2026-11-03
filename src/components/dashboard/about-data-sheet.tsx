@@ -6,9 +6,9 @@
 import { Badge } from '@/components/ui/badge'
 import { Sheet, SheetContent, SheetTitle } from '@/components/ui/sheet'
 import { GLOSSARY, INDICATORS, KNOWN_LIMITATIONS } from '@/data/indicators'
-import { CLARITY_CHECKOUT_PERIOD } from '@/data/real/clarity-checkout-friction'
-import { loadRealOverview } from '@/data/real/real-overview'
-import { formatDateRangeLabel, formatPeriodCompact } from '@/lib/format'
+import { formatPeriodLong } from '@/data/updates/dates'
+import { useRealData } from '@/hooks/use-real-data'
+import { formatPeriodCompact } from '@/lib/format'
 import { UNIT_LABELS } from '@/types/common'
 
 const STATUS_VARIANT: Record<string, 'success' | 'warning' | 'info' | 'error'> = {
@@ -25,14 +25,16 @@ const STATUS_LABEL: Record<string, string> = {
   'nao-validado': 'Não validado',
 }
 
-function isoToDate(iso: string): Date {
-  return new Date(`${iso}T00:00:00-03:00`)
+function daysIn(from: string, to: string): number {
+  return Math.round((Date.parse(`${to}T00:00:00Z`) - Date.parse(`${from}T00:00:00Z`)) / 86_400_000) + 1
 }
 
 export function AboutDataSheet({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
-  const view = loadRealOverview()
-  const ga4Period = view ? formatDateRangeLabel(isoToDate(view.period.from), isoToDate(view.period.to)) : 'período indisponível'
-  const clarityPeriod = formatDateRangeLabel(isoToDate(CLARITY_CHECKOUT_PERIOD.from), isoToDate(CLARITY_CHECKOUT_PERIOD.to))
+  const { overview, clarity, ux } = useRealData()
+  const ga4Period = overview?.period ? formatPeriodLong(overview.period.from, overview.period.to) : 'período indisponível'
+  const clarityPeriod = clarity ? formatPeriodLong(clarity.period.from, clarity.period.to) : 'período indisponível'
+  const clarityDays = clarity ? daysIn(clarity.period.from, clarity.period.to) : 0
+  const uxPeriod = ux.period ? formatPeriodLong(ux.period.from, ux.period.to) : 'período indisponível'
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -47,17 +49,17 @@ export function AboutDataSheet({ open, onOpenChange }: { open: boolean; onOpenCh
           <div className="rounded-[var(--radius-control)] border border-[var(--color-border)] p-3">
             <p className="text-ds-sm font-semibold">Resumo Executivo Pré-Black</p>
             <p className="mt-1 text-ds-sm text-[var(--color-muted-foreground)]">
-              PneuStore_Resumo_Executivo_PreBlack_2026.pdf (PneuStore · UX Research) — o relatório que gerou o pedido deste dashboard. Semana
-              14/10 a 20/10/2026 vs. mesmo período de 2025. GA4 (sessões, conversão, receita estimada) e Clarity (passagem entre etapas,
+              {ux.source ?? 'Relatório de UX Research'} — o relatório que gerou o pedido deste dashboard. Semana {uxPeriod} vs. mesmo
+              período de 2025. GA4 (sessões, conversão, receita estimada) e Clarity (passagem entre etapas,
               dead clicks, comparação anual).
             </p>
           </div>
           <div className="rounded-[var(--radius-control)] border border-[var(--color-border)] p-3">
             <p className="text-ds-sm font-semibold">Microsoft Clarity — atrito do checkout</p>
             <p className="mt-1 text-ds-sm text-[var(--color-muted-foreground)]">
-              {clarityPeriod} (3 dias fechados — janela máxima da API pública), consulta via query-analytics-dashboard. Dead/rage
-              clicks e quick backs das 6 páginas de checkout, agregados para todos os dispositivos (sem segmentação nesta extração).
-              O período inclui sábado, domingo e o feriado de Finados — não é comparável com dias úteis.
+              {clarityPeriod} ({clarityDays} {clarityDays === 1 ? 'dia fechado' : 'dias fechados'} — janela máxima da API pública), consulta via
+              query-analytics-dashboard. Dead/rage clicks e quick backs das 6 páginas de checkout, agregados para todos os dispositivos
+              (sem segmentação nesta extração).
             </p>
           </div>
           <div className="rounded-[var(--radius-control)] border border-[var(--color-border)] p-3">
@@ -65,8 +67,8 @@ export function AboutDataSheet({ open, onOpenChange }: { open: boolean; onOpenCh
             <p className="mt-1 text-ds-sm text-[var(--color-muted-foreground)]">
               {ga4Period}, exportação manual em PDF do Looker Studio. Participação por canal já agregada pelo Looker (CPC, Organic,
               Direct, Outros, CRM, Criteo); origem/mídia detalhada por linha; marcas com itens vistos/adicionados*/comprados e receita.
-              {view?.catalogPeriod &&
-                ` A tabela de marcas cobre só ${formatPeriodCompact(view.catalogPeriod.from, view.catalogPeriod.to)} (página "DASHBOARD - SITE" filtrada para esses dias), não o período inteiro.`}{' '}
+              {overview?.catalogPeriod &&
+                ` A tabela de marcas cobre só ${formatPeriodCompact(overview.catalogPeriod.from, overview.catalogPeriod.to)} (página "DASHBOARD - SITE" filtrada para esses dias), não o período inteiro.`}{' '}
               *Adicionados é estimado a partir de %Add to Cart — não é uma contagem bruta. Sem produtos individuais nem sessões/pedidos por
               canal nesta extração; usuários aproximados.
             </p>

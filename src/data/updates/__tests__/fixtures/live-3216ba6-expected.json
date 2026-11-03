@@ -1,0 +1,392 @@
+{
+  "overview": {
+    "period": {
+      "from": "2026-10-02",
+      "to": "2026-10-29"
+    },
+    "extractedAt": "2026-10-30T12:17:54.727Z",
+    "sessions": 1635826,
+    "users": 945100,
+    "orders": 31456,
+    "revenue": 47460135.62,
+    "channels": [
+      {
+        "channel": "google",
+        "sourceMedium": "google / cpc",
+        "revenue": 18580000
+      },
+      {
+        "channel": "meta",
+        "sourceMedium": "meta / cpc",
+        "revenue": 882600
+      },
+      {
+        "channel": "crmback",
+        "sourceMedium": "crmback / whatsapp",
+        "revenue": 791430
+      },
+      {
+        "channel": "crm",
+        "sourceMedium": "crm / email",
+        "revenue": 748400
+      },
+      {
+        "channel": "crm",
+        "sourceMedium": "crm / botao_push_saida",
+        "revenue": 259540.00000000003
+      },
+      {
+        "channel": "google",
+        "sourceMedium": "google / organic",
+        "revenue": 12230000
+      },
+      {
+        "channel": "actionpay",
+        "sourceMedium": "actionpay / organic",
+        "revenue": 510340
+      },
+      {
+        "channel": "criteo",
+        "sourceMedium": "criteo / display",
+        "revenue": 184660
+      },
+      {
+        "channel": "(direct)",
+        "sourceMedium": "(direct) / (none)",
+        "revenue": 7150000
+      }
+    ],
+    "channelShares": [
+      {
+        "channel": "CPC",
+        "revenueSharePercent": 43.45,
+        "comparisonChangePercent": -11.2
+      },
+      {
+        "channel": "Organic",
+        "revenueSharePercent": 27.52,
+        "comparisonChangePercent": 30.8
+      },
+      {
+        "channel": "Direct",
+        "revenueSharePercent": 15.07,
+        "comparisonChangePercent": 7.5
+      },
+      {
+        "channel": "Outros",
+        "revenueSharePercent": 9.75,
+        "comparisonChangePercent": -20.1
+      },
+      {
+        "channel": "CRM",
+        "revenueSharePercent": 3.82,
+        "comparisonChangePercent": 15
+      },
+      {
+        "channel": "Criteo",
+        "revenueSharePercent": 0.39,
+        "comparisonChangePercent": -15.4
+      }
+    ],
+    "brands": [
+      {
+        "brand": "Itaro",
+        "itemsViewed": 410027,
+        "itemsAdded": 178977,
+        "itemsPurchased": 25916,
+        "itemRevenue": 9463292.56
+      },
+      {
+        "brand": "Michelin",
+        "itemsViewed": 354108,
+        "itemsAdded": 67422,
+        "itemsPurchased": 7770,
+        "itemRevenue": 7180698.21
+      },
+      {
+        "brand": "Pirelli",
+        "itemsViewed": 235021,
+        "itemsAdded": 52339,
+        "itemsPurchased": 6236,
+        "itemRevenue": 4909407.72
+      },
+      {
+        "brand": "Kumho",
+        "itemsViewed": 179878,
+        "itemsAdded": 53586,
+        "itemsPurchased": 8903,
+        "itemRevenue": 4404692.62
+      },
+      {
+        "brand": "Continental",
+        "itemsViewed": 130455,
+        "itemsAdded": 40819,
+        "itemsPurchased": 5529,
+        "itemRevenue": 2942476.03
+      },
+      {
+        "brand": "Bridgestone",
+        "itemsViewed": 110551,
+        "itemsAdded": 38505,
+        "itemsPurchased": 4461,
+        "itemRevenue": 3361737.94
+      },
+      {
+        "brand": "Firestone",
+        "itemsViewed": 79123,
+        "itemsAdded": 31135,
+        "itemsPurchased": 3172,
+        "itemRevenue": 1472876.66
+      },
+      {
+        "brand": "Barum",
+        "itemsViewed": 69716,
+        "itemsAdded": 26534,
+        "itemsPurchased": 3052,
+        "itemRevenue": 1179814.65
+      }
+    ],
+    "limitations": [
+      "Período exibido no relatório no momento da exportação: 2 de out. de 2026 - 29 de out. de 2026 — rolante, confirmar se ainda vale ao reutilizar este snapshot.",
+      "records[] representa o TOTAL do período inteiro exibido, sem segmentação por dia nem por dispositivo (ver AggregateMetricSchema, src/data/providers/schema.ts) — nunca comparar diretamente com um snapshot segmentado por dispositivo.",
+      "users veio arredondado pelo Looker (formato \"mil\") — valor aproximado, não oficial.",
+      "revenue.total é o valor EXATO do período, lido da seção \"Participação por canal\" do PDF (R$ 47.460.135,62) — não o valor aproximado (\"~R$ 47,46 mi\") do card de resumo do GA4.",
+      "acquisition.channels[] não tem sessões nem pedidos — este relatório só fornece receita por origem/mídia.",
+      "Parte da receita por canal em acquisition.channels[] também é aproximada (mesmo motivo do card de resumo).",
+      "catalog.brands[].itemsAdded é estimado a partir de %Add to Cart do Looker, não uma contagem bruta (ver 19-plano-integracao-via-looker-export.md).",
+      "Separação site/app não comprovada estruturalmente (sem streamId) — depende de revisão manual de qual seção do PDF foi usada (ver 07-validacao-stream-ga4.md).",
+      "Taxa de conversão não incluída — fórmula oficial pendente de aprovação da Analytics (D-04).",
+      "acquisition.channelShares[] vem da seção \"Participação por canal\" do PDF — já agregado pelo próprio Looker (um canal, uma linha); comparisonChangePercent é a variação vs. o período anterior que o Looker calcula, não recalculada aqui."
+    ],
+    "note": "Extraído manualmente de um PDF exportado do Looker Studio (looker-pdf-cli.mjs), não da GA4 Data API diretamente."
+  },
+  "clarity": {
+    "period": {
+      "from": "2026-10-27",
+      "to": "2026-10-29"
+    },
+    "friction": [
+      {
+        "path": "/checkout/v2/cart",
+        "label": "Carrinho",
+        "deadClicks": 10129,
+        "rageClicks": 626,
+        "quickBacks": 542
+      },
+      {
+        "path": "/checkout/v2/servicos-escolha",
+        "label": "Escolha de serviços",
+        "deadClicks": 8707,
+        "rageClicks": 289,
+        "quickBacks": 213
+      },
+      {
+        "path": "/checkout/v2/delivery/type",
+        "label": "Tipo de entrega",
+        "deadClicks": 40,
+        "rageClicks": 0,
+        "quickBacks": 2
+      },
+      {
+        "path": "/checkout/v2/delivery/send",
+        "label": "Endereço de entrega",
+        "deadClicks": 1490,
+        "rageClicks": 45,
+        "quickBacks": 54
+      },
+      {
+        "path": "/checkout/v2/payment",
+        "label": "Pagamento",
+        "deadClicks": 1338,
+        "rageClicks": 16,
+        "quickBacks": 64
+      },
+      {
+        "path": "/checkout/v2/confirmation",
+        "label": "Confirmação",
+        "deadClicks": 439,
+        "rageClicks": 9,
+        "quickBacks": 96
+      }
+    ],
+    "sessionsByDevice": {
+      "mobile": 110378,
+      "desktop": 53490,
+      "tablet": 745,
+      "other": 13,
+      "total": 164626
+    },
+    "notes": [
+      "Atrito do checkout agregado para todos os dispositivos — sem segmentação por dispositivo nesta extração.",
+      "/checkout/v2/delivery/type com volume muito baixo — a URL pode variar com parâmetros, ainda não confirmado.",
+      "Janela pública de Data Export do Clarity limitada a 1–3 dias fechados."
+    ],
+    "source": "Microsoft Clarity (query-analytics-dashboard), agregado manualmente",
+    "criticalPaths": [
+      "/checkout/v2/cart"
+    ],
+    "shares": [
+      {
+        "path": "/checkout/v2/cart",
+        "share": 45.74357584789775
+      },
+      {
+        "path": "/checkout/v2/servicos-escolha",
+        "share": 39.32168179560132
+      },
+      {
+        "path": "/checkout/v2/delivery/type",
+        "share": 0.1806439958451881
+      },
+      {
+        "path": "/checkout/v2/delivery/send",
+        "share": 6.728988845233257
+      },
+      {
+        "path": "/checkout/v2/payment",
+        "share": 6.042541661021541
+      },
+      {
+        "path": "/checkout/v2/confirmation",
+        "share": 1.9825678544009393
+      }
+    ]
+  },
+  "ux": {
+    "source": "PneuStore_Resumo_Executivo_PreBlack_2026.pdf (PneuStore · UX Research)",
+    "period": {
+      "from": "2026-10-14",
+      "to": "2026-10-20"
+    },
+    "comparisonPeriod": {
+      "from": "2025-10-14",
+      "to": "2025-10-20"
+    },
+    "weekly": {
+      "sessions": {
+        "y2025": 707350,
+        "y2026": 404343
+      },
+      "conversionRatePercent": {
+        "y2025": 1.38,
+        "y2026": 1.98
+      },
+      "revenueEstimatedBRL": {
+        "y2025": 14600000,
+        "y2026": 12040000
+      },
+      "averageTicketBRL": {
+        "y2025": 1491.02,
+        "y2026": 1502
+      },
+      "note": "Fonte: GA4 transcrito no relatório. Receita calculada por pedidos × ticket médio (estimativa, não é a receita bruta do GA4). Métricas agregadas de todo o site — não isolam o efeito de mudanças na jornada."
+    },
+    "funnel": {
+      "steps": [
+        {
+          "label": "Instalação para carrinho",
+          "mobile": 60,
+          "desktop": 87
+        },
+        {
+          "label": "Carrinho para frete",
+          "mobile": 34,
+          "desktop": 39
+        },
+        {
+          "label": "Pagamento para confirmação",
+          "mobile": 83,
+          "desktop": 75
+        }
+      ],
+      "note": "Clarity. Visitas por URL, sem sequência validada. Instalação e pagamento: complemento das taxas de saída do relatório."
+    },
+    "deadClicks": {
+      "steps": [
+        {
+          "label": "Instalação",
+          "mobile": 0.25,
+          "desktop": 0.55
+        },
+        {
+          "label": "Carrinho",
+          "mobile": 0.36,
+          "desktop": 1.17
+        },
+        {
+          "label": "Frete / entrega",
+          "mobile": 0.28,
+          "desktop": 0.4
+        },
+        {
+          "label": "Pagamento",
+          "mobile": 0.14,
+          "desktop": 0.59
+        }
+      ],
+      "recordings": [
+        "Idas e voltas entre checkout e carrinho.",
+        "Cards de instalação e opções de frete recebem cliques repetidos.",
+        "Cadastro incompleto impede um usuário de avançar no pagamento."
+      ],
+      "note": "Clarity. Relatos de 15 sessões mobile selecionadas por cliques, com leitura parcial. Não medem frequência. Desktop ainda não analisado — tratar os valores de desktop acima como preliminares."
+    },
+    "yoy": {
+      "productToConfirmedOrderPercent": {
+        "mobile": {
+          "y2025": 1.6,
+          "y2026": 3.3
+        },
+        "desktop": {
+          "y2025": 3.7,
+          "y2026": 6.7
+        }
+      },
+      "sessionsWithDeadClickPercent": {
+        "mobile": {
+          "y2025": 11.2,
+          "y2026": 15.2
+        },
+        "desktop": {
+          "y2025": 18.4,
+          "y2026": 27.1
+        }
+      },
+      "clarityCoverageOfGa4SessionsPercent": {
+        "y2025": 2.5,
+        "y2026": 86
+      },
+      "note": "Plataformas e captura diferentes limitam a comparação — a cobertura do Clarity mudou de 2,5% das sessões do GA4 em 2025 para 86% em 2026. Estes dados não comprovam melhora ou piora causada pela nova interface."
+    },
+    "priorities": [
+      {
+        "title": "Investigar checkout e carrinho",
+        "detail": "Checar redirecionamento/login e analisar 20 gravações desktop.",
+        "owner": "Desenvolvimento + UX"
+      },
+      {
+        "title": "Validar a compreensão das telas",
+        "detail": "Teste remoto com 5 a 6 clientes em instalação mobile e carrinho/frete.",
+        "owner": "UX + Produto"
+      },
+      {
+        "title": "Revisar a mensuração",
+        "detail": "Recuperar eventos de serviço e verificar cobertura do add_to_cart.",
+        "owner": "Analytics"
+      },
+      {
+        "title": "Definir o que cabe antes da Black",
+        "detail": "Confirmar congelamento de código e ajustes possíveis. Repetir a análise na Black.",
+        "owner": "Produto + Desenvolvimento"
+      }
+    ]
+  },
+  "alerts": [
+    {
+      "label": "Carrinho: atrito alto"
+    },
+    {
+      "label": "Outros: receita em queda"
+    }
+  ]
+}

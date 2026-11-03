@@ -1,12 +1,9 @@
 // Bloco A do layout one-page: selo de período/fonte por bloco de dado + até
-// 2 alertas curtos derivados automaticamente (ver dashboard-alerts.ts).
+// 2 alertas curtos derivados automaticamente (ver buildDashboardData).
 
 import { AlertTriangle, BadgeCheck } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
-import { buildDashboardAlerts } from '@/data/real/dashboard-alerts'
-import { PRE_BLACK_REPORT_PERIOD } from '@/data/real/pre-black-executive-report'
-import { CLARITY_CHECKOUT_PERIOD } from '@/data/real/clarity-checkout-friction'
-import { loadRealOverview } from '@/data/real/real-overview'
+import { useRealData } from '@/hooks/use-real-data'
 import { formatDateShort } from '@/lib/format'
 
 function rangeLabel(from: string, to: string): string {
@@ -16,24 +13,27 @@ function rangeLabel(from: string, to: string): string {
 }
 
 export function StatusBar() {
-  const view = loadRealOverview()
-  const alerts = buildDashboardAlerts()
+  const { overview, clarity, ux, alerts } = useRealData()
 
   return (
     <div className="flex flex-wrap items-center justify-between gap-2.5">
       <div className="flex flex-wrap items-center gap-1.5">
-        <Badge variant="success">
-          <BadgeCheck className="h-3 w-3" />
-          Relatório UX {rangeLabel(PRE_BLACK_REPORT_PERIOD.from, PRE_BLACK_REPORT_PERIOD.to)}
-        </Badge>
-        <Badge variant="success">
-          <BadgeCheck className="h-3 w-3" />
-          Clarity {rangeLabel(CLARITY_CHECKOUT_PERIOD.from, CLARITY_CHECKOUT_PERIOD.to)}
-        </Badge>
-        {view && (
+        {ux.period && (
           <Badge variant="success">
             <BadgeCheck className="h-3 w-3" />
-            GA4/Looker {rangeLabel(view.period.from, view.period.to)}
+            Relatório UX {rangeLabel(ux.period.from, ux.period.to)}
+          </Badge>
+        )}
+        {clarity && (
+          <Badge variant="success">
+            <BadgeCheck className="h-3 w-3" />
+            Clarity {rangeLabel(clarity.period.from, clarity.period.to)}
+          </Badge>
+        )}
+        {overview?.period && (
+          <Badge variant="success">
+            <BadgeCheck className="h-3 w-3" />
+            GA4/Looker {rangeLabel(overview.period.from, overview.period.to)}
           </Badge>
         )}
       </div>
