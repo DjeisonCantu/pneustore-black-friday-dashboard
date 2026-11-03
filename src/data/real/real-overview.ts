@@ -46,6 +46,12 @@ export interface RealOverviewView {
   /** Participação por canal já agregada pelo Looker (um canal, uma linha) — ver ChannelShareRowSchema. */
   channelShares: RealChannelShareRow[]
   brands: RealBrandRow[]
+  /**
+   * Período próprio de `brands` quando difere de `period` (ex.: a página de
+   * marcas do Looker estava filtrada para 2 dias). `null` = as marcas valem
+   * para o mesmo período de `period` — a UI não mostra selo próprio.
+   */
+  catalogPeriod: { from: string; to: string } | null
   limitations: string[]
   note?: string
 }
@@ -87,6 +93,9 @@ export function loadRealOverview(): RealOverviewView | null {
     channels: snapshot.acquisition?.channels ?? [],
     channelShares: snapshot.acquisition?.channelShares ?? [],
     brands: snapshot.catalog?.brands ?? [],
+    catalogPeriod: snapshot.metadata.catalogPeriod
+      ? { from: snapshot.metadata.catalogPeriod.from, to: snapshot.metadata.catalogPeriod.to }
+      : null,
     limitations: snapshot.metadata.limitations ?? [],
     note: snapshot.metadata.note,
   }

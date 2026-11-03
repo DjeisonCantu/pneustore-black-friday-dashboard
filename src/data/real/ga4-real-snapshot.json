@@ -2,12 +2,12 @@
   "metadata": {
     "source": "ga4",
     "platform": "site",
-    "schemaVersion": "1.4.0",
-    "extractedAt": "2026-10-30T12:17:54.727Z",
+    "schemaVersion": "1.5.0",
+    "extractedAt": "2026-11-03T14:04:32.063Z",
     "period": {
-      "from": "2026-10-02",
-      "to": "2026-10-29",
-      "raw": "2 de out. de 2026 - 29 de out. de 2026"
+      "from": "2026-10-06",
+      "to": "2026-11-02",
+      "raw": "6 de out. de 2026 - 2 de nov. de 2026"
     },
     "deviceScope": [
       "desktop",
@@ -17,34 +17,41 @@
     "status": "partial",
     "note": "Extraído manualmente de um PDF exportado do Looker Studio (looker-pdf-cli.mjs), não da GA4 Data API diretamente.",
     "limitations": [
-      "Período exibido no relatório no momento da exportação: 2 de out. de 2026 - 29 de out. de 2026 — rolante, confirmar se ainda vale ao reutilizar este snapshot.",
+      "Período exibido no relatório no momento da exportação: 6 de out. de 2026 - 2 de nov. de 2026 — rolante, confirmar se ainda vale ao reutilizar este snapshot.",
       "records[] representa o TOTAL do período inteiro exibido, sem segmentação por dia nem por dispositivo (ver AggregateMetricSchema, src/data/providers/schema.ts) — nunca comparar diretamente com um snapshot segmentado por dispositivo.",
       "users veio arredondado pelo Looker (formato \"mil\") — valor aproximado, não oficial.",
-      "revenue.total é o valor EXATO do período, lido da seção \"Participação por canal\" do PDF (R$ 47.460.135,62) — não o valor aproximado (\"~R$ 47,46 mi\") do card de resumo do GA4.",
+      "revenue.total é o valor EXATO do período, lido da seção \"Participação por canal\" do PDF (R$ 44.945.346,96) — não o valor aproximado (\"~R$ 44,95 mi\") do card de resumo do GA4.",
       "acquisition.channels[] não tem sessões nem pedidos — este relatório só fornece receita por origem/mídia.",
-      "Parte da receita por canal em acquisition.channels[] também é aproximada (mesmo motivo do card de resumo).",
+      "Parte da receita por canal em acquisition.channels[] também é aproximada (mesmo motivo acima).",
       "catalog.brands[].itemsAdded é estimado a partir de %Add to Cart do Looker, não uma contagem bruta (ver 19-plano-integracao-via-looker-export.md).",
       "Separação site/app não comprovada estruturalmente (sem streamId) — depende de revisão manual de qual seção do PDF foi usada (ver 07-validacao-stream-ga4.md).",
       "Taxa de conversão não incluída — fórmula oficial pendente de aprovação da Analytics (D-04).",
-      "acquisition.channelShares[] vem da seção \"Participação por canal\" do PDF — já agregado pelo próprio Looker (um canal, uma linha); comparisonChangePercent é a variação vs. o período anterior que o Looker calcula, não recalculada aqui."
-    ]
+      "acquisition.channelShares[] vem da seção \"Participação por canal\" do PDF — já agregado pelo próprio Looker (um canal, uma linha); comparisonChangePercent é a variação vs. o período anterior que o Looker calcula, não recalculada aqui.",
+      "catalog.brands[] vem da página \"DASHBOARD - SITE\" do PDF, que estava filtrada para 01/11 a 02/11/2026 — NÃO é o mesmo período de records[]/acquisition (06/10 a 02/11). Ver metadata.catalogPeriod.",
+      "PDF de 03/11/2026: as páginas 9, 10 e 11 (App PneuStore, Speedmax/Região e Dashboard Leads) saíram em branco porque o Looker não terminou de carregar antes da exportação. Nada dessas páginas foi usado neste snapshot."
+    ],
+    "catalogPeriod": {
+      "from": "2026-11-01",
+      "to": "2026-11-02",
+      "raw": "1 de nov. de 2026 - 2 de nov. de 2026 (página DASHBOARD - SITE)"
+    }
   },
   "records": [
     {
-      "date": "2026-10-29",
+      "date": "2026-11-02",
       "isFuture": false,
       "isPartial": true,
       "sessions": {
-        "total": 1635826
+        "total": 1582478
       },
       "users": {
-        "total": 945100
+        "total": 920300
       },
       "orders": {
-        "total": 31456
+        "total": 29641
       },
       "revenue": {
-        "total": 47460135.62
+        "total": 44945346.96
       }
     }
   ],
@@ -53,56 +60,80 @@
       {
         "channel": "google",
         "sourceMedium": "google / cpc",
-        "revenue": 18580000
+        "revenue": 17220000
       },
       {
         "channel": "meta",
         "sourceMedium": "meta / cpc",
-        "revenue": 882600
+        "revenue": 891750
       },
       {
         "channel": "crmback",
         "sourceMedium": "crmback / whatsapp",
-        "revenue": 791430
+        "revenue": 735230
       },
       {
         "channel": "crm",
         "sourceMedium": "crm / email",
-        "revenue": 748400
+        "revenue": 716090
       },
       {
         "channel": "crm",
         "sourceMedium": "crm / botao_push_saida",
-        "revenue": 259540.00000000003
+        "revenue": 241470
       },
       {
         "channel": "google",
         "sourceMedium": "google / organic",
-        "revenue": 12230000
+        "revenue": 11900000
       },
       {
         "channel": "actionpay",
         "sourceMedium": "actionpay / organic",
-        "revenue": 510340
+        "revenue": 523880
       },
       {
         "channel": "criteo",
         "sourceMedium": "criteo / display",
-        "revenue": 184660
+        "revenue": 170580
       },
       {
         "channel": "(direct)",
         "sourceMedium": "(direct) / (none)",
-        "revenue": 7150000
+        "revenue": 6910000
       }
     ],
     "channelShares": [
-      { "channel": "CPC", "revenueSharePercent": 43.45, "comparisonChangePercent": -11.2 },
-      { "channel": "Organic", "revenueSharePercent": 27.52, "comparisonChangePercent": 30.8 },
-      { "channel": "Direct", "revenueSharePercent": 15.07, "comparisonChangePercent": 7.5 },
-      { "channel": "Outros", "revenueSharePercent": 9.75, "comparisonChangePercent": -20.1 },
-      { "channel": "CRM", "revenueSharePercent": 3.82, "comparisonChangePercent": 15.0 },
-      { "channel": "Criteo", "revenueSharePercent": 0.39, "comparisonChangePercent": -15.4 }
+      {
+        "channel": "CPC",
+        "revenueSharePercent": 42.79,
+        "comparisonChangePercent": -11.7
+      },
+      {
+        "channel": "Organic",
+        "revenueSharePercent": 28.33,
+        "comparisonChangePercent": 29.1
+      },
+      {
+        "channel": "Direct",
+        "revenueSharePercent": 15.37,
+        "comparisonChangePercent": 7.4
+      },
+      {
+        "channel": "Outros",
+        "revenueSharePercent": 9.34,
+        "comparisonChangePercent": -17.8
+      },
+      {
+        "channel": "CRM",
+        "revenueSharePercent": 3.79,
+        "comparisonChangePercent": 8.2
+      },
+      {
+        "channel": "Criteo",
+        "revenueSharePercent": 0.38,
+        "comparisonChangePercent": -12.2
+      }
     ]
   },
   "catalog": {
@@ -110,59 +141,73 @@
     "brands": [
       {
         "brand": "Itaro",
-        "itemsViewed": 410027,
-        "itemsAdded": 178977,
-        "itemsPurchased": 25916,
-        "itemRevenue": 9463292.56
+        "itemsViewed": 23739,
+        "itemsAdded": 13339,
+        "itemsPurchased": 1081,
+        "itemRevenue": 399161.99
       },
       {
         "brand": "Michelin",
-        "itemsViewed": 354108,
-        "itemsAdded": 67422,
-        "itemsPurchased": 7770,
-        "itemRevenue": 7180698.21
+        "itemsViewed": 22833,
+        "itemsAdded": 4740,
+        "itemsPurchased": 308,
+        "itemRevenue": 298040.72
       },
       {
         "brand": "Pirelli",
-        "itemsViewed": 235021,
-        "itemsAdded": 52339,
-        "itemsPurchased": 6236,
-        "itemRevenue": 4909407.72
+        "itemsViewed": 14194,
+        "itemsAdded": 4281,
+        "itemsPurchased": 251,
+        "itemRevenue": 205694.6
+      },
+      {
+        "brand": "Speedmax",
+        "itemsViewed": 11882,
+        "itemsAdded": 3181,
+        "itemsPurchased": 323,
+        "itemRevenue": 192291.2
       },
       {
         "brand": "Kumho",
-        "itemsViewed": 179878,
-        "itemsAdded": 53586,
-        "itemsPurchased": 8903,
-        "itemRevenue": 4404692.62
+        "itemsViewed": 11208,
+        "itemsAdded": 3773,
+        "itemsPurchased": 354,
+        "itemRevenue": 158541.3
+      },
+      {
+        "brand": "Goodyear",
+        "itemsViewed": 8457,
+        "itemsAdded": 2474,
+        "itemsPurchased": 124,
+        "itemRevenue": 77500.3
       },
       {
         "brand": "Continental",
-        "itemsViewed": 130455,
-        "itemsAdded": 40819,
-        "itemsPurchased": 5529,
-        "itemRevenue": 2942476.03
+        "itemsViewed": 8202,
+        "itemsAdded": 2969,
+        "itemsPurchased": 218,
+        "itemRevenue": 109567.05
       },
       {
         "brand": "Bridgestone",
-        "itemsViewed": 110551,
-        "itemsAdded": 38505,
-        "itemsPurchased": 4461,
-        "itemRevenue": 3361737.94
+        "itemsViewed": 7826,
+        "itemsAdded": 3606,
+        "itemsPurchased": 197,
+        "itemRevenue": 144604.75
       },
       {
         "brand": "Firestone",
-        "itemsViewed": 79123,
-        "itemsAdded": 31135,
-        "itemsPurchased": 3172,
-        "itemRevenue": 1472876.66
+        "itemsViewed": 5490,
+        "itemsAdded": 2804,
+        "itemsPurchased": 156,
+        "itemRevenue": 72644.66
       },
       {
         "brand": "Barum",
-        "itemsViewed": 69716,
-        "itemsAdded": 26534,
-        "itemsPurchased": 3052,
-        "itemRevenue": 1179814.65
+        "itemsViewed": 3969,
+        "itemsAdded": 1827,
+        "itemsPurchased": 126,
+        "itemRevenue": 49635.84
       }
     ],
     "categories": null

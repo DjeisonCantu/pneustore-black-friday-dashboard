@@ -21,7 +21,38 @@
 import { z } from 'zod'
 import type { SnapshotValidator } from '@/data/async-snapshot/types'
 
-export const SNAPSHOT_SCHEMA_VERSION = '1.4.0'
+export const SNAPSHOT_SCHEMA_VERSION = '1.5.0'
+
+const IsoDateSchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'data precisa estar no formato AAAA-MM-DD')
+
+/** `true` só para datas que existem no calendário (rejeita "2026-02-30", que o regex sozinho aceitaria). */
+function isRealCalendarDate(value: string): boolean {
+  const parsed = new Date(`${value}T00:00:00Z`)
+  return !Number.isNaN(parsed.getTime()) && parsed.toISOString().slice(0, 10) === value
+}
+
+/**
+ * Período próprio da tabela de marcas (`catalog.brands[]`) — atualização de
+ * 03/11/2026. A página "DASHBOARD - SITE" do Looker pode estar filtrada para
+ * menos dias que o resto do relatório (em 03/11: só 01–02/nov, enquanto
+ * `records[]`/`acquisition` cobriam 06/10–02/11). Sem este campo, a UI
+ * rotularia as marcas com o período do snapshot inteiro, o que seria falso.
+ * Opcional: sem ele, as marcas valem para o mesmo período de `metadata.period`
+ * (comportamento anterior).
+ */
+export const CatalogPeriodSchema = z
+  .object({
+    from: IsoDateSchema,
+    to: IsoDateSchema,
+    raw: z.string().optional(),
+  })
+  .refine((p) => isRealCalendarDate(p.from) && isRealCalendarDate(p.to), {
+    message: 'catalogPeriod precisa conter datas que existem no calendário',
+  })
+  .refine((p) => p.from <= p.to, {
+    message: 'catalogPeriod.from precisa ser menor ou igual a catalogPeriod.to',
+  })
+export type CatalogPeriod = z.infer<typeof CatalogPeriodSchema>
 
 export const DeviceMetricSetSchema = z.object({
   desktop: z.number().nonnegative(),
@@ -113,6 +144,8 @@ export const SnapshotMetadataSchema = z.object({
    * snapshot gerado por `looker-pdf-cli.mjs`.
    */
   limitations: z.array(z.string()).optional(),
+  /** Campo opcional (03/11/2026) — período próprio de `catalog.brands[]`, quando difere de `period`. Ver `CatalogPeriodSchema`. */
+  catalogPeriod: CatalogPeriodSchema.optional(),
 }).refine((meta) => meta.period.from <= meta.period.to, {
   message: 'period.from precisa ser menor ou igual a period.to',
   path: ['period'],

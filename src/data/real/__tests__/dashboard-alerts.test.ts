@@ -10,7 +10,7 @@ describe('buildDashboardAlerts', () => {
     expect(buildDashboardAlerts()).toContainEqual({ label: 'Carrinho: atrito alto' })
   })
 
-  it('aponta o canal com maior queda de receita (Outros, -20,1%)', () => {
+  it('aponta o canal com maior queda de receita (Outros, -17,8%)', () => {
     expect(buildDashboardAlerts()).toContainEqual({ label: 'Outros: receita em queda' })
   })
 })

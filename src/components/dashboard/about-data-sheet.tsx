@@ -6,6 +6,8 @@
 import { Badge } from '@/components/ui/badge'
 import { Sheet, SheetContent, SheetTitle } from '@/components/ui/sheet'
 import { GLOSSARY, INDICATORS, KNOWN_LIMITATIONS } from '@/data/indicators'
+import { loadRealOverview } from '@/data/real/real-overview'
+import { formatDateRangeLabel, formatPeriodCompact } from '@/lib/format'
 import { UNIT_LABELS } from '@/types/common'
 
 const STATUS_VARIANT: Record<string, 'success' | 'warning' | 'info' | 'error'> = {
@@ -22,7 +24,14 @@ const STATUS_LABEL: Record<string, string> = {
   'nao-validado': 'Não validado',
 }
 
+function isoToDate(iso: string): Date {
+  return new Date(`${iso}T00:00:00-03:00`)
+}
+
 export function AboutDataSheet({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
+  const view = loadRealOverview()
+  const ga4Period = view ? formatDateRangeLabel(isoToDate(view.period.from), isoToDate(view.period.to)) : 'período indisponível'
+
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className="space-y-5">
@@ -51,8 +60,10 @@ export function AboutDataSheet({ open, onOpenChange }: { open: boolean; onOpenCh
           <div className="rounded-[var(--radius-control)] border border-[var(--color-border)] p-3">
             <p className="text-ds-sm font-semibold">GA4 / Looker Studio — canal e marca</p>
             <p className="mt-1 text-ds-sm text-[var(--color-muted-foreground)]">
-              02/10 a 29/10/2026, exportação manual em PDF do Looker Studio. Participação por canal já agregada pelo Looker (CPC, Organic,
+              {ga4Period}, exportação manual em PDF do Looker Studio. Participação por canal já agregada pelo Looker (CPC, Organic,
               Direct, Outros, CRM, Criteo); origem/mídia detalhada por linha; marcas com itens vistos/adicionados*/comprados e receita.
+              {view?.catalogPeriod &&
+                ` A tabela de marcas cobre só ${formatPeriodCompact(view.catalogPeriod.from, view.catalogPeriod.to)} (página "DASHBOARD - SITE" filtrada para esses dias), não o período inteiro.`}{' '}
               *Adicionados é estimado a partir de %Add to Cart — não é uma contagem bruta. Sem produtos individuais nem sessões/pedidos por
               canal nesta extração; usuários aproximados.
             </p>

@@ -328,6 +328,49 @@ describe('validateDailySnapshot — acquisition.channelShares (atualização de 
   })
 })
 
+describe('validateDailySnapshot — metadata.catalogPeriod (atualização de 03/11/2026)', () => {
+  function withCatalogPeriod(catalogPeriod: unknown) {
+    const payload = validPayload()
+    return { ...payload, metadata: { ...payload.metadata, catalogPeriod } }
+  }
+
+  it('aceita catalogPeriod bem formado e o preserva na saída', () => {
+    const result = validateDailySnapshot(withCatalogPeriod({ from: '2026-11-01', to: '2026-11-02', raw: '1 de nov. de 2026 - 2 de nov. de 2026' }))
+    expect(result.success).toBe(true)
+    expect(result.data?.metadata.catalogPeriod).toEqual({ from: '2026-11-01', to: '2026-11-02', raw: '1 de nov. de 2026 - 2 de nov. de 2026' })
+  })
+
+  it('catalogPeriod é opcional — sem ele o snapshot continua válido (comportamento anterior)', () => {
+    const result = validateDailySnapshot(validPayload())
+    expect(result.success).toBe(true)
+    expect(result.data?.metadata.catalogPeriod).toBeUndefined()
+  })
+
+  it('aceita catalogPeriod de um único dia (from igual a to)', () => {
+    expect(validateDailySnapshot(withCatalogPeriod({ from: '2026-11-02', to: '2026-11-02' })).success).toBe(true)
+  })
+
+  it('rejeita data em formato errado', () => {
+    expect(validateDailySnapshot(withCatalogPeriod({ from: '01/11/2026', to: '2026-11-02' })).success).toBe(false)
+  })
+
+  it('rejeita data que não existe no calendário (o regex sozinho aceitaria "2026-02-30")', () => {
+    const result = validateDailySnapshot(withCatalogPeriod({ from: '2026-02-30', to: '2026-03-01' }))
+    expect(result.success).toBe(false)
+    expect(result.errors?.join(' ')).toContain('calendário')
+  })
+
+  it('rejeita catalogPeriod.from depois de catalogPeriod.to', () => {
+    const result = validateDailySnapshot(withCatalogPeriod({ from: '2026-11-03', to: '2026-11-01' }))
+    expect(result.success).toBe(false)
+    expect(result.errors?.join(' ')).toContain('catalogPeriod')
+  })
+
+  it('rejeita catalogPeriod sem uma das datas', () => {
+    expect(validateDailySnapshot(withCatalogPeriod({ from: '2026-11-01' })).success).toBe(false)
+  })
+})
+
 describe('isCompatibleSchemaVersion', () => {
   it('aceita a própria versão suportada pela aplicação', () => {
     expect(isCompatibleSchemaVersion(SNAPSHOT_SCHEMA_VERSION)).toBe(true)
@@ -335,6 +378,10 @@ describe('isCompatibleSchemaVersion', () => {
 
   it('aceita uma versão com mesmo major (minor/patch podem evoluir sem quebrar)', () => {
     expect(isCompatibleSchemaVersion('1.4.2')).toBe(true)
+  })
+
+  it('snapshots gerados na versão anterior (1.4.x, sem catalogPeriod) continuam compatíveis', () => {
+    expect(isCompatibleSchemaVersion('1.4.0')).toBe(true)
   })
 
   it('rejeita um major diferente — formato pode ter mudado de forma incompatível', () => {

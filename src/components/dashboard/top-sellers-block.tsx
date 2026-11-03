@@ -1,11 +1,12 @@
 // Bloco E do layout one-page: "O que vende" — receita por marca em barras +
 // mini-funil por marca (vistos → adicionados* → comprados).
 
+import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { NoteTooltip } from '@/components/common/note-tooltip'
 import { DeadClickBarChart } from '@/components/charts/dead-click-bar-chart'
 import { loadRealOverview } from '@/data/real/real-overview'
-import { formatCurrencyCompactBRL, formatInt } from '@/lib/format'
+import { formatCurrencyCompactBRL, formatInt, formatPeriodCompact } from '@/lib/format'
 
 function BrandFunnelRow({ brand, itemsViewed, itemsAdded, itemsPurchased }: { brand: string; itemsViewed: number; itemsAdded: number; itemsPurchased: number }) {
   const max = itemsViewed || 1
@@ -41,6 +42,11 @@ export function TopSellersBlock() {
     <Card className="print-break-inside-avoid">
       <CardHeader className="flex-row items-center gap-2 space-y-0">
         <CardTitle>O que vende</CardTitle>
+        {view.catalogPeriod && (
+          <Badge variant="neutral" aria-label={`Período das marcas: ${formatPeriodCompact(view.catalogPeriod.from, view.catalogPeriod.to)}`}>
+            {formatPeriodCompact(view.catalogPeriod.from, view.catalogPeriod.to)}
+          </Badge>
+        )}
         <NoteTooltip label="Sobre itens adicionados" notes='"Adicionados" é estimado a partir de %Add to Cart do Looker — não é uma contagem bruta.' />
       </CardHeader>
       <CardContent className="space-y-5">

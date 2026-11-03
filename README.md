@@ -137,7 +137,7 @@ Nenhum dado fictício em lugar nenhum. Três fontes **reais** ficam embutidas no
 |---|---|---|---|---|
 | Resumo Executivo Pré-Black (PDF, UX Research) | B (KPIs), parte de C (mobile × desktop 2025 vs 2026), F (prioridades) | `src/data/real/pre-black-executive-report.ts` | 14/10 a 20/10/2026, comparado com 14/10 a 20/10/2025 | Transcrição manual do relatório `PneuStore_Resumo_Executivo_PreBlack_2026.pdf` — o próprio relatório que motivou este dashboard. GA4 (sessões, conversão, receita estimada) e Clarity (passagem entre etapas, dead clicks, comparação anual) |
 | Microsoft Clarity — atrito do checkout | C (dead/rage clicks e quick backs por página) | `src/data/real/clarity-checkout-friction.ts` | 27/10 a 29/10/2026 (3 dias fechados) | Consulta real via `query-analytics-dashboard` (MCP do Clarity), agregada manualmente em `05-atualizacoes-diarias/2026-10-30/clarity-2026-10-27_a_29.json` |
-| GA4 / Looker Studio | D (participação por canal), E (receita e funil por marca) | `src/data/real/ga4-real-snapshot.json` (`src/data/real/real-overview.ts`) | 02/10/2026 a 29/10/2026 | Exportação manual em PDF do Looker Studio, processada por `04-validacao/scripts/looker-pdf-cli.mjs` |
+| GA4 / Looker Studio | D (participação por canal), E (receita e funil por marca) | `src/data/real/ga4-real-snapshot.json` (`src/data/real/real-overview.ts`) | 06/10/2026 a 02/11/2026 (tabela de marcas: só 01–02/nov — `metadata.catalogPeriod`) | Exportação manual em PDF do Looker Studio, processada por `04-validacao/scripts/looker-pdf-cli.mjs` |
 
 `pre-black-executive-report.ts` e `clarity-checkout-friction.ts` são módulos estáticos simples
 (sem contrato Zod nem pipeline assíncrono) — são relatórios fechados de um período específico, não

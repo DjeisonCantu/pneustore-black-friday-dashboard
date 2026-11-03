@@ -71,6 +71,21 @@ describe('DashboardPage — layout one-page', () => {
     expect(screen.getAllByText('Itaro').length).toBeGreaterThan(0)
   })
 
+  it('bloco "O que vende" mostra o próprio selo de período (01–02/nov), nunca o período do snapshot inteiro', () => {
+    renderDashboard()
+    const heading = screen.getByText('O que vende')
+    const card = heading.closest('div')!.parentElement!
+    expect(within(card).getByText('01–02/nov')).toBeTruthy()
+    expect(within(card).queryByText(/06\/10/)).toBeNull()
+  })
+
+  it('mostra as 10 marcas, incluindo as que antes eram descartadas (Pirelli, Speedmax, Kumho, Goodyear)', () => {
+    renderDashboard()
+    for (const brand of ['Pirelli', 'Speedmax', 'Kumho', 'Goodyear']) {
+      expect(screen.getAllByText(brand).length).toBeGreaterThan(0)
+    }
+  })
+
   it('"Sobre os dados" abre como gaveta (Sheet), não como navegação de página', () => {
     renderDashboard()
     expect(screen.queryByText('Fontes de dados reais')).toBeNull()
@@ -92,6 +107,7 @@ describe('DashboardPage — layout one-page', () => {
     expect(captured).toContain('Carrinho')
     expect(captured).toContain('CPC')
     expect(captured).toContain('Itaro')
+    expect(captured).toContain('## O que vende (01–02/nov)')
     expect(captured).toContain('Investigar checkout e carrinho')
   })
 })

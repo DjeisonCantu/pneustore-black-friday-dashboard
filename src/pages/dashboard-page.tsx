@@ -17,7 +17,7 @@ import { buildDashboardAlerts } from '@/data/real/dashboard-alerts'
 import { CLARITY_CHECKOUT_FRICTION, CLARITY_CHECKOUT_PERIOD } from '@/data/real/clarity-checkout-friction'
 import { GA4_WEEKLY, PRE_BLACK_PRIORITIES, PRE_BLACK_REPORT_PERIOD, percentDelta } from '@/data/real/pre-black-executive-report'
 import { loadRealOverview } from '@/data/real/real-overview'
-import { formatCurrencyBRL, formatCurrencyCompactBRL, formatDateShort, formatInt, formatPercent } from '@/lib/format'
+import { formatCurrencyBRL, formatCurrencyCompactBRL, formatDateShort, formatInt, formatPercent, formatPeriodCompact } from '@/lib/format'
 
 function rangeLabel(from: string, to: string): string {
   return `${formatDateShort(new Date(`${from}T00:00:00-03:00`))} a ${formatDateShort(new Date(`${to}T00:00:00-03:00`))}`
@@ -54,7 +54,7 @@ export function DashboardPage() {
       '|---|---|---|',
       ...(view?.channelShares ?? []).map((c) => `| ${c.channel} | ${formatPercent(c.revenueSharePercent, 1)} | ${c.comparisonChangePercent >= 0 ? '+' : ''}${formatPercent(c.comparisonChangePercent, 1)} |`),
       '',
-      '## O que vende',
+      `## O que vende${view?.catalogPeriod ? ` (${formatPeriodCompact(view.catalogPeriod.from, view.catalogPeriod.to)})` : ''}`,
       '',
       '| Marca | Receita | Vistos | Adicionados* | Comprados |',
       '|---|---|---|---|---|',
