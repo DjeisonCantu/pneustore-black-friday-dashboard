@@ -55,6 +55,18 @@ describe('DashboardPage — layout one-page', () => {
     expect(screen.getByText(/Carrinho concentra/)).toBeTruthy()
   })
 
+  it('bloco "Onde o checkout trava" rotula os dead clicks com o período do Clarity (31/10–02/11), sem o período antigo', () => {
+    renderDashboard()
+    expect(screen.getByText('Dead clicks por página (31/10–02/11)')).toBeTruthy()
+    expect(screen.queryByText(/27–29\/10/)).toBeNull()
+  })
+
+  it('selos da barra de status mostram cada fonte com o próprio período (Clarity 31/10 a 02/11, GA4/Looker 06/10 a 02/11)', () => {
+    renderDashboard()
+    expect(screen.getByText(/^Clarity 31\/10 a 02\/11$/)).toBeTruthy()
+    expect(screen.getByText(/^GA4\/Looker 06\/10 a 02\/11$/)).toBeTruthy()
+  })
+
   it('bloco "De onde vem a receita" não repete nenhum canal (participação agregada do Looker)', () => {
     renderDashboard()
     const heading = screen.getByText('De onde vem a receita')

@@ -6,6 +6,7 @@
 import { Badge } from '@/components/ui/badge'
 import { Sheet, SheetContent, SheetTitle } from '@/components/ui/sheet'
 import { GLOSSARY, INDICATORS, KNOWN_LIMITATIONS } from '@/data/indicators'
+import { CLARITY_CHECKOUT_PERIOD } from '@/data/real/clarity-checkout-friction'
 import { loadRealOverview } from '@/data/real/real-overview'
 import { formatDateRangeLabel, formatPeriodCompact } from '@/lib/format'
 import { UNIT_LABELS } from '@/types/common'
@@ -31,6 +32,7 @@ function isoToDate(iso: string): Date {
 export function AboutDataSheet({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
   const view = loadRealOverview()
   const ga4Period = view ? formatDateRangeLabel(isoToDate(view.period.from), isoToDate(view.period.to)) : 'período indisponível'
+  const clarityPeriod = formatDateRangeLabel(isoToDate(CLARITY_CHECKOUT_PERIOD.from), isoToDate(CLARITY_CHECKOUT_PERIOD.to))
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -53,8 +55,9 @@ export function AboutDataSheet({ open, onOpenChange }: { open: boolean; onOpenCh
           <div className="rounded-[var(--radius-control)] border border-[var(--color-border)] p-3">
             <p className="text-ds-sm font-semibold">Microsoft Clarity — atrito do checkout</p>
             <p className="mt-1 text-ds-sm text-[var(--color-muted-foreground)]">
-              27/10 a 29/10/2026 (3 dias fechados — janela máxima da API pública), consulta via query-analytics-dashboard. Dead/rage
+              {clarityPeriod} (3 dias fechados — janela máxima da API pública), consulta via query-analytics-dashboard. Dead/rage
               clicks e quick backs das 6 páginas de checkout, agregados para todos os dispositivos (sem segmentação nesta extração).
+              O período inclui sábado, domingo e o feriado de Finados — não é comparável com dias úteis.
             </p>
           </div>
           <div className="rounded-[var(--radius-control)] border border-[var(--color-border)] p-3">

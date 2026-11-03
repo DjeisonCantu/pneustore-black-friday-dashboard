@@ -1,5 +1,5 @@
 // Bloco C do layout one-page: "Onde o checkout trava" — dead clicks por
-// página (Clarity, 27-29/10), rage clicks/quick backs em mini-barras, e a
+// página (Clarity, período em CLARITY_CHECKOUT_PERIOD), rage clicks/quick backs em mini-barras, e a
 // comparação mobile × desktop do relatório UX (2025 vs 2026) em barras
 // agrupadas, no lugar das tabelas da versão anterior.
 
@@ -7,9 +7,15 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { NoteTooltip } from '@/components/common/note-tooltip'
 import { DeadClickBarChart } from '@/components/charts/dead-click-bar-chart'
 import { DeviceBarChart, type DeviceBarDatum } from '@/components/charts/device-bar-chart'
-import { CLARITY_CHECKOUT_FRICTION, CLARITY_CHECKOUT_NOTES, deadClickShare, isCriticalPage } from '@/data/real/clarity-checkout-friction'
+import {
+  CLARITY_CHECKOUT_FRICTION,
+  CLARITY_CHECKOUT_NOTES,
+  CLARITY_CHECKOUT_PERIOD,
+  deadClickShare,
+  isCriticalPage,
+} from '@/data/real/clarity-checkout-friction'
 import { CLARITY_DEAD_CLICKS_2026, CLARITY_YOY } from '@/data/real/pre-black-executive-report'
-import { formatInt, formatPercent } from '@/lib/format'
+import { formatInt, formatPercent, formatPeriodCompact } from '@/lib/format'
 
 function MiniBarRow({ label, mobile, desktop, max }: { label: string; mobile: number; desktop: number; max: number }) {
   return (
@@ -56,7 +62,9 @@ export function CheckoutFrictionBlock() {
       </CardHeader>
       <CardContent className="space-y-5">
         <div>
-          <p className="mb-1.5 text-ds-sm font-medium text-[var(--color-muted-foreground)]">Dead clicks por página (27–29/10)</p>
+          <p className="mb-1.5 text-ds-sm font-medium text-[var(--color-muted-foreground)]">
+            Dead clicks por página ({formatPeriodCompact(CLARITY_CHECKOUT_PERIOD.from, CLARITY_CHECKOUT_PERIOD.to)})
+          </p>
           <DeadClickBarChart
             data={deadClickData}
             formatValue={formatInt}
