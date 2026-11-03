@@ -132,7 +132,7 @@ export interface UpdateMeta {
 }
 
 export interface ParsedUpdate {
-  /** Nome do arquivo sem ".md" — define a ordem de leitura. "(prévia)" na prévia do navegador. */
+  /** Nome do arquivo sem ".md" — define a ordem de leitura. Na prévia do navegador vale PREVIEW_UPDATE_ID (ordena por último). */
   id: string
   meta: UpdateMeta
   sections: SectionMap

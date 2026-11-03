@@ -52,6 +52,14 @@ export function compareUpdateIds(a: string, b: string): number {
   return x < y ? -1 : x > y ? 1 : 0
 }
 
+/** Id da prévia no navegador: ordena DEPOIS de qualquer arquivo real (os nomes reais começam por 0000 ou por uma data). */
+export const PREVIEW_UPDATE_ID = '9999-previa'
+
+/** Merge das atualizações já publicadas com um arquivo ainda não publicado (a prévia "Ver como fica"). */
+export function mergeWithPreview(published: readonly ParsedUpdate[], incoming: Omit<ParsedUpdate, 'id'>): MergedData {
+  return mergeUpdates([...published, { id: PREVIEW_UPDATE_ID, ...incoming }])
+}
+
 export function mergeUpdates(updates: readonly ParsedUpdate[]): MergedData {
   const ids = new Set<string>()
   for (const update of updates) {

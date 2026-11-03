@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { compareUpdateIds, mergeUpdates } from '../merge-updates'
+import { PREVIEW_UPDATE_ID, compareUpdateIds, mergeUpdates, mergeWithPreview } from '../merge-updates'
 import { canaisSection, checkoutSection, limitations, parsed, resumoSection } from './helpers'
 
 describe('compareUpdateIds', () => {
@@ -132,5 +132,26 @@ describe('mergeUpdates — limitações por seção/atualização', () => {
       parsed('2026-11-03-1530', [canaisSection('2026-10-06..2026-11-02', 1, 1), limitations('Igual.')]),
     ])
     expect(merged.limitations).toHaveLength(1)
+  })
+})
+
+describe('mergeWithPreview — a prévia vale por cima de tudo que já foi publicado', () => {
+  const published = [
+    parsed('0000-baseline', [resumoSection('2026-10-02..2026-10-29', 1)]),
+    parsed('2026-12-01-0900', [resumoSection('2026-11-24..2026-11-30', 2)]),
+  ]
+
+  it('a prévia ordena depois de qualquer arquivo real, mesmo de datas futuras', () => {
+    const incoming = parsed('x', [resumoSection('2026-12-01..2026-12-07', 3)])
+    const merged = mergeWithPreview(published, { meta: incoming.meta, sections: incoming.sections, limitations: incoming.limitations })
+    expect(merged.current['looker.resumo']?.updateId).toBe(PREVIEW_UPDATE_ID)
+    expect(merged.current['looker.resumo']?.section.data.sessoes?.value).toBe(3)
+    expect(merged.history['looker.resumo']).toHaveLength(3)
+  })
+
+  it('não altera a lista de atualizações publicadas', () => {
+    const incoming = parsed('x', [canaisSection('2026-10-02..2026-10-29', 1, 1)])
+    mergeWithPreview(published, { meta: incoming.meta, sections: incoming.sections, limitations: incoming.limitations })
+    expect(published.map((u) => u.id)).toEqual(['0000-baseline', '2026-12-01-0900'])
   })
 })

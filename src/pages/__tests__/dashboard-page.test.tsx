@@ -8,9 +8,10 @@ import { describe, expect, it } from 'vitest'
 import { ExportProvider, useExportContext } from '@/state/export-context'
 import { RealDataProvider } from '@/state/real-data-provider'
 import { TooltipProvider } from '@/components/ui/tooltip'
-import { BUNDLED_UPDATES } from '@/data/bundled-data'
-import { buildDashboardData, type DashboardData } from '@/data/dashboard-data'
+import { type DashboardData } from '@/data/dashboard-data'
 import { mergeUpdates } from '@/data/updates/merge-updates'
+import { BASELINE_DATA, BASELINE_UPDATE } from '@/data/updates/__tests__/baseline'
+import { buildDashboardData } from '@/data/dashboard-data'
 import { parseUpdateMd } from '@/data/updates/parse-update-md'
 import example0311 from '@/data/updates/__tests__/fixtures/atualizacao-2026-11-03.md?raw'
 import { DashboardPage } from '../dashboard-page'
@@ -19,7 +20,7 @@ import { DashboardPage } from '../dashboard-page'
 function dataWith0311(): DashboardData {
   const parsed = parseUpdateMd(example0311)
   if (!parsed.ok) throw new Error('fixture inválida')
-  return buildDashboardData(mergeUpdates([...BUNDLED_UPDATES, { id: '2026-11-03-1530', ...parsed.update }]))
+  return buildDashboardData(mergeUpdates([BASELINE_UPDATE, { id: '2026-11-03-1530', ...parsed.update }]))
 }
 
 function ExportProbe({ onMarkdown }: { onMarkdown: (markdown: string) => void }) {
@@ -31,15 +32,15 @@ function ExportProbe({ onMarkdown }: { onMarkdown: (markdown: string) => void })
   )
 }
 
-/** Sem `data`, a página lê os dados do bundle (o baseline = o que está no ar). */
-function renderDashboard(onMarkdown: (markdown: string) => void = () => {}, data?: DashboardData) {
+/** Sem `data`, usa só o baseline (= o que estava no ar), independente de quantas atualizações já foram publicadas. */
+function renderDashboard(onMarkdown: (markdown: string) => void = () => {}, data: DashboardData = BASELINE_DATA) {
   const page = (
     <ExportProvider>
       <DashboardPage />
       <ExportProbe onMarkdown={onMarkdown} />
     </ExportProvider>
   )
-  return render(<TooltipProvider delayDuration={0}>{data ? <RealDataProvider data={data}>{page}</RealDataProvider> : page}</TooltipProvider>)
+  return render(<TooltipProvider delayDuration={0}><RealDataProvider data={data}>{page}</RealDataProvider></TooltipProvider>)
 }
 
 describe('DashboardPage — layout one-page', () => {
@@ -133,6 +134,26 @@ describe('DashboardPage — layout one-page', () => {
     for (const brand of ['Pirelli', 'Speedmax', 'Kumho', 'Goodyear']) {
       expect(screen.getAllByText(brand).length).toBeGreaterThan(0)
     }
+  })
+
+  it('rodapé tem o link discreto "Atualizar dados" (que abre a gaveta de atualização) e ele não aparece no Markdown', () => {
+    let captured = ''
+    renderDashboard((markdown) => {
+      captured = markdown
+    })
+    const link = screen.getByText('Atualizar dados')
+    expect(link.tagName).toBe('BUTTON')
+    expect(link.closest('footer')).not.toBeNull()
+    expect(link.querySelector('svg')).toBeNull() // sem ícone
+    expect(link.closest('.no-print')).not.toBeNull() // fora do PDF
+    act(() => {
+      screen.getByText('probe-export').click()
+    })
+    expect(captured).not.toContain('Atualizar dados')
+    act(() => {
+      link.click()
+    })
+    expect(screen.getByText('Carregar o arquivo')).toBeTruthy()
   })
 
   it('"Sobre os dados" abre como gaveta (Sheet), não como navegação de página', () => {
